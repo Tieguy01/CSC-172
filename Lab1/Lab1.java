@@ -31,8 +31,18 @@ public class Lab1 {
     }
 
     public static void main(String[] args) {
-        System.out.println(isAnagram("cinema", "iceman"));
+        System.out.println(isAnagram("QweRty", "QweRtY"));
+        System.out.println(isAnagram("qwe_123_omorw3", "3123_owrmoq_we"));
+        System.out.println(isAnagram("^^^^&&123", "^^^^&&123"));
+        System.out.println(isAnagram("1111", "11111"));
+
+        System.out.println();
+
+        System.out.println(isRotation("123yrewq", "yreqw123"));
+        System.out.println(isRotation("0  1  2", "1  20  "));
+        System.out.println(isRotation("^^^^&&123", "^^^^&&123"));
         System.out.println(isRotation("1111", "11111"));
+        
     }
 
 }

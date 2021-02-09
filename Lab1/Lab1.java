@@ -2,7 +2,6 @@ package Lab1;
 
 public class Lab1 {
 
-    
     public static boolean isAnagram(String word1, String word2){
         if (word1.length() != word2.length()) return false;
         for (int i = 0; i < word2.length(); i++) {

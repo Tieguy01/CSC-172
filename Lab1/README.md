@@ -1,4 +1,5 @@
 Ethan Shahan Lab #1 Java Refresher
+Lab: Tues/Thursday 4:50-6:05
 
 Contact Info:
     Email: eshahan@u.rochester.edu

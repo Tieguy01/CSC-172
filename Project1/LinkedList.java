@@ -39,6 +39,10 @@ public class LinkedList<T> {
         head = head.next;
         return obj;
     }
+
+    public T getHead() {
+        return head.data;
+    }
     
     public void printList() {
         printList(head);
@@ -51,7 +55,19 @@ public class LinkedList<T> {
             System.out.print(front.data.toString() + " ");
             printList(front.next);
         }
+    }
 
+    public void printListReverse() {
+        printListReverse(head);
+    }
+
+    private void printListReverse(Node front) {
+        if (front == null) {
+            return;
+        } else {
+            printList(front.next);
+            System.out.print(front.data.toString() + " ");
+        }
     }
 
 }

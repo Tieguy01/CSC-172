@@ -27,7 +27,11 @@ public class Stack<T> {
         return theStack.removeHead();
     }
     
+    public T getHead() {
+        return theStack.getHead();
+    }
+
     public void viewStack() {
-        theStack.printList();
+        theStack.printListReverse();
     }
 }

@@ -1,7 +1,42 @@
 package Project1;
 
+import java.util.Scanner;
+import java.util.regex.Pattern;
+
 public class InfixCalculator {
 
+    public static Queue<String> stringConverter(String expression) {
+        Queue<String> dividedExpression = new Queue<>();
+        
+        Scanner scan = new Scanner(expression);
+        while (scan.hasNext()) {
+            dividedExpression.viewQueue();
+            System.out.println();
+            String next = scan.next();
+            Pattern pattern = Pattern.compile("(-?\\d+(\\.\\d+)?)|(\\!|\\*|\\/|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\))"); //https://www.baeldung.com/java-check-string-number
+            
+            if (pattern.matcher(next).matches()) {
+                dividedExpression.enqueue(next);
+            } else {
+                Scanner partScan = new Scanner(next);
+                partScan.useDelimiter("");
+
+                while (partScan.hasNext()) {
+                    String nxt = partScan.next();
+                    if (pattern.matcher(nxt).matches()) {
+                        dividedExpression.enqueue(nxt);
+                    }
+                }
+                partScan.close();
+
+            }
+        }
+        scan.close();
+
+        dividedExpression.viewQueue();
+        return dividedExpression;
+    }
+    
     public static Queue<String> infixToPostfix(String infix) {
         Stack<String> operatorStack = new Stack<>();
         Queue<String> postfixQueue = new Queue<>();
@@ -12,6 +47,8 @@ public class InfixCalculator {
 
             if (Character.getNumericValue(token) >= 0) {
                 postfixQueue.enqueue(token.toString());
+            } else if (token == '(') {
+                operatorStack.push(token.toString());
             } else if (token == ')') {
 
                 boolean parenFound = false;
@@ -26,27 +63,25 @@ public class InfixCalculator {
 
             } else {
 
-                if (token != '(') {
-                    int minPrecedence = findPredence(token);
-                    System.out.println("minP: " + minPrecedence);
-                    int oPPrecedence;
-                    boolean lowPrecFound = false;
-                    while (!lowPrecFound && !operatorStack.isEmpty()) {
-                        String currentOp = operatorStack.pop();
-                        oPPrecedence = findPredence(currentOp.charAt(0));
+                if (operatorStack.isEmpty() || (operatorStack.getHead().indexOf("(") == -1)) {
+                    operatorStack.push(token.toString());
 
-                        if (minPrecedence < oPPrecedence) {
-                            postfixQueue.enqueue(currentOp);
-                        } else {
-                            operatorStack.push(currentOp);
-                            lowPrecFound = true;
+                } else {
+                    int tokenPrecedence = findPredence(token);
+                    int lastPrecedence = findPredence(operatorStack.getHead().charAt(0));
+
+                    if ((tokenPrecedence > lastPrecedence) || ((tokenPrecedence == lastPrecedence) && isRightAssociative(operatorStack.getHead().charAt(0)))) {
+                        operatorStack.push(token.toString());
+
+                    } else {
+
+                        while(!operatorStack.isEmpty() && ((tokenPrecedence < lastPrecedence) || ((tokenPrecedence == lastPrecedence) && !isRightAssociative(operatorStack.getHead().charAt(0))))) {
+                            postfixQueue.enqueue(operatorStack.pop());
                         }
-                        
-                        System.out.println("oPP: " + oPPrecedence);
+                        operatorStack.push(token.toString());
+
                     }
                 }
-                operatorStack.push(token.toString());
-
             }
 
             System.out.print("Stack: ");
@@ -86,12 +121,21 @@ public class InfixCalculator {
                 return 1;
             case '|':
                 return 0;
-            case '(':
-                return -1;
+            // case '(':
+            //     return -1;
             default:
                 return 0;
         }
     }
+
+    public static boolean isRightAssociative(char token) {
+        switch(token) {
+            case '!':
+                return true;
+            default:
+                return false;
+        }
+     }
 
     public static String postfixEval(Queue<String> postfix) {
         Stack<String> evalStack = new Stack<>();
@@ -161,7 +205,10 @@ public class InfixCalculator {
     }
 
     public static void main(String[] args) {
-        System.out.println(postfixEval(infixToPostfix("!((1<3)&(2>4)|1)")));
-        // System.out.println(postfixEval(infixToPostfix("1&0|1")));
+        // System.out.println(postfixEval(infixToPostfix("!((1<3)&(2>4)|1)")));
+        // System.out.println(postfixEval(infixToPostfix("2-1+1")));
+
+        stringConverter("!(3 * (1 + 6) = 63 / 3");
+        // stringConverter("! * / + - < > = & | ( ) 1 1.1 0.1 11.1 11");
     }
 }

@@ -32,6 +32,6 @@ public class Stack<T> {
     }
 
     public void viewStack() {
-        theStack.printListReverse();
+        theStack.printList();
     }
 }

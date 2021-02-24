@@ -65,7 +65,7 @@ public class LinkedList<T> {
         if (front == null) {
             return;
         } else {
-            printList(front.next);
+            printListReverse(front.next);
             System.out.print(front.data.toString() + " ");
         }
     }

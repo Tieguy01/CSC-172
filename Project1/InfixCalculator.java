@@ -1,5 +1,10 @@
 package Project1;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -12,8 +17,8 @@ public class InfixCalculator {
         
         Scanner scan = new Scanner(expression);
         while (scan.hasNext()) {
-            dividedExpression.viewQueue();
-            System.out.println();
+            // dividedExpression.viewQueue();
+            // System.out.println();
             String next = scan.next();
             Pattern operators = Pattern.compile("\\!|\\*|\\/|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); //https://www.baeldung.com/java-check-string-number
             
@@ -35,8 +40,8 @@ public class InfixCalculator {
         }
         scan.close();
 
-        dividedExpression.viewQueue();
-        System.out.println();
+        // dividedExpression.viewQueue();
+        // System.out.println();
         return dividedExpression;
     }
     
@@ -47,7 +52,7 @@ public class InfixCalculator {
         while (!infix.isEmpty()) {
 
             String token = infix.dequeue();
-            System.out.println(token + ":");
+            // System.out.println(token + ":");
 
             if (numbers.matcher(token).matches()) {
                 postfixQueue.enqueue(token);
@@ -90,21 +95,21 @@ public class InfixCalculator {
                 }
             }
 
-            System.out.print("Stack: ");
-            operatorStack.viewStack();
-            System.out.println();
-            System.out.print("Queue: ");
-            postfixQueue.viewQueue();
-            System.out.println();
+            // System.out.print("Stack: ");
+            // operatorStack.viewStack();
+            // System.out.println();
+            // System.out.print("Queue: ");
+            // postfixQueue.viewQueue();
+            // System.out.println();
         }
 
         while (!operatorStack.isEmpty()) {
             postfixQueue.enqueue(operatorStack.pop());
         }
 
-        System.out.print("Queue: ");
-        postfixQueue.viewQueue();
-        System.out.println();
+        // System.out.print("Queue: ");
+        // postfixQueue.viewQueue();
+        // System.out.println();
         return postfixQueue;
     }
 
@@ -148,7 +153,7 @@ public class InfixCalculator {
 
         while (!postfix.isEmpty()) {
             String token = postfix.dequeue();
-            System.out.println(token + ": ");
+            // System.out.println(token + ": ");
 
             if (numbers.matcher(token).matches()) {
                 evalStack.push(token.toString());
@@ -203,19 +208,32 @@ public class InfixCalculator {
                 evalStack.push(String.valueOf(newNum));
             }
 
-            System.out.print("Stack: ");
-            evalStack.viewStack();
-            System.out.println();
+            // System.out.print("Stack: ");
+            // evalStack.viewStack();
+            // System.out.println();
         }
 
-        return evalStack.pop();
+        String finalValue = String.format("%.2f", Double.parseDouble(evalStack.pop()));
+        return finalValue;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, IOException{
+        Scanner scan = new Scanner(new File(args[0]));
+        FileWriter writer = new FileWriter(new File(args[1]));
+
+        while (scan.hasNextLine()) {
+            writer.write(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))) + "\n");
+            // System.out.println(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))));
+        }
+        writer.close();
+        scan.close();
+
+        // scan.close();
+
         // System.out.println(postfixEval(infixToPostfix("!((1<3)&(2>4)|1)")));
         // System.out.println(postfixEval(infixToPostfix("2-1+1")));
-        // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 + 3 * 2)"))));
-        System.out.println(postfixEval(infixToPostfix(stringConverter("!((1 < 3) & (2 > 4) | 1)"))));
-        // stringConverter("! * / + - < > = & | ( ) 1 1.1 0.1 11.1 11");
+        // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 + 3 * 7)"))));
+        // System.out.println(postfixEval(infixToPostfix(stringConverter("!((1 < 3) & (2 > 4) | 1)"))));
+        // stringConverter("! * / + - < > = & | ( ) 1 1.1 0.1 11.1 11 -1 -10 -1.1 (-1)");
     }
 }

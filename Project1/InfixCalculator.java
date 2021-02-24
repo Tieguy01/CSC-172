@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class InfixCalculator {
 
-    public static Pattern numbers = Pattern.compile("-?\\d+(\\.\\d+)?");
+    public static Pattern numbers = Pattern.compile("\\d+(\\.\\d+)?");
 
     public static Queue<String> stringConverter(String expression) {
         Queue<String> dividedExpression = new Queue<>();
@@ -20,7 +19,7 @@ public class InfixCalculator {
             // dividedExpression.viewQueue();
             // System.out.println();
             String next = scan.next();
-            Pattern operators = Pattern.compile("\\!|\\*|\\/|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); //https://www.baeldung.com/java-check-string-number
+            Pattern operators = Pattern.compile("s|c|t|\\!|\\^|\\*|\\/|\\%|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); //https://www.baeldung.com/java-check-string-number
             
             if (numbers.matcher(next).matches() || operators.matcher(next).matches()) {
                 dividedExpression.enqueue(next);
@@ -30,6 +29,7 @@ public class InfixCalculator {
 
                 while (partScan.hasNext()) {
                     String nxt = partScan.next();
+                    // System.out.println(nxt);
                     if (numbers.matcher(nxt).matches() || operators.matcher(nxt).matches()) {
                         dividedExpression.enqueue(nxt);
                     }
@@ -115,10 +115,17 @@ public class InfixCalculator {
 
     public static int findPredence(String token) {
         switch(token) {
+            case "s":
+            case "c":
+            case "t":
+                return 8;
             case "!":
+                return 7;
+            case "^":
                 return 6;
             case "*":
             case "/":
+            case "%":
                 return 5;
             case "+":
             case "-":
@@ -141,7 +148,11 @@ public class InfixCalculator {
 
     public static boolean isRightAssociative(String token) {
         switch(token) {
+            case "s":
+            case "c":
+            case "t":
             case "!":
+            case "^":
                 return true;
             default:
                 return false;
@@ -150,37 +161,59 @@ public class InfixCalculator {
 
     public static String postfixEval(Queue<String> postfix) {
         Stack<String> evalStack = new Stack<>();
+        Pattern singleOperators = Pattern.compile("s|c|t|\\!");
 
         while (!postfix.isEmpty()) {
             String token = postfix.dequeue();
             // System.out.println(token + ": ");
-
+        
             if (numbers.matcher(token).matches()) {
                 evalStack.push(token.toString());
             } else {
 
                 double num2 = Double.parseDouble(evalStack.pop());
                 double newNum = 0.0;
+                
+                if (singleOperators.matcher(token).matches())  {
+                
+                    switch(token) {
+                        case "s":
+                            newNum = Math.sin(num2);
+                            break;
+                        case "c":
+                            newNum = Math.cos(num2);
+                            break;
+                        case "t":
+                            newNum = Math.tan(num2);
+                            break;
+                        case "!":
+                            if ((int)num2 == 1) newNum = 0;
+                            else  if ((int)num2 == 0) newNum = 1;
+                            break;
+                    }
 
-                if (token.indexOf("!") != -1)  {
-                    if ((int)num2 == 1) newNum = 0;
-                    else  if ((int)num2 == 0) newNum = 1;
                 } else {
 
                     double num1 = Double.parseDouble(evalStack.pop());
 
                     switch(token) {
-                        case "+":
-                            newNum = num1 + num2;
-                            break;
-                        case "-":
-                            newNum = num1 - num2;
+                        case "^":
+                            newNum = Math.pow(num1, num2);
                             break;
                         case "*":
                             newNum = num1 * num2;
                             break;
                         case "/":
                             newNum = num1 / num2;
+                            break;
+                        case "%":
+                            newNum = num1 % num2;
+                            break;
+                        case "+":
+                            newNum = num1 + num2;
+                            break;
+                        case "-":
+                            newNum = num1 - num2;
                             break;
                         case "<":
                             if (num1 < num2) newNum = 1;
@@ -228,12 +261,11 @@ public class InfixCalculator {
         writer.close();
         scan.close();
 
-        // scan.close();
-
         // System.out.println(postfixEval(infixToPostfix("!((1<3)&(2>4)|1)")));
         // System.out.println(postfixEval(infixToPostfix("2-1+1")));
         // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 + 3 * 7)"))));
-        // System.out.println(postfixEval(infixToPostfix(stringConverter("!((1 < 3) & (2 > 4) | 1)"))));
+        // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 - 2) - ((((4 ^ 5) * 3) * 6) / (7 ^ (2 ^ 2)))"))));
+        // System.out.println(postfixEval(infixToPostfix(stringConverter("s(2 * 2) + c(8 / 2) + tan(2 + 2)"))));
         // stringConverter("! * / + - < > = & | ( ) 1 1.1 0.1 11.1 11 -1 -10 -1.1 (-1)");
     }
 }

@@ -9,27 +9,35 @@ import java.util.regex.Pattern;
 
 public class InfixCalculator {
 
-    public static Pattern numbers = Pattern.compile("\\d+(\\.\\d+)?");
+    public static Pattern numbers = Pattern.compile("\\d+(\\.\\d+)?"); // pattern used to check whether a string is a number
 
     public static Queue<String> stringConverter(String expression) {
-        Queue<String> dividedExpression = new Queue<>();
-        
+        Queue<String> dividedExpression = new Queue<>(); // Queue to store the given expression broken up into tokens without spaces
         Scanner scan = new Scanner(expression);
+
+        // go through each bit of the expression separated by spaces
         while (scan.hasNext()) {
             // dividedExpression.viewQueue();
             // System.out.println();
             String next = scan.next();
-            Pattern operators = Pattern.compile("s|c|t|\\!|\\^|\\*|\\/|\\%|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); //https://www.baeldung.com/java-check-string-number
+            Pattern operators = Pattern.compile("s|c|t|\\!|\\^|\\*|\\/|\\%|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); // pattern used to check whether a string is any of the operators 
+            //https://www.baeldung.com/java-check-string-number
             
+            // if the given bit of the expression is a number or an oparator, enqueue it
             if (numbers.matcher(next).matches() || operators.matcher(next).matches()) {
                 dividedExpression.enqueue(next);
+
             } else {
+
+                // otherwise, search through each character of the bit of the expression with a blank delimiter
                 Scanner partScan = new Scanner(next);
                 partScan.useDelimiter("");
 
                 while (partScan.hasNext()) {
                     String nxt = partScan.next();
                     // System.out.println(nxt);
+
+                    // for each character of the bit, if it is a number or a character, enqueue it
                     if (numbers.matcher(nxt).matches() || operators.matcher(nxt).matches()) {
                         dividedExpression.enqueue(nxt);
                     }
@@ -46,18 +54,23 @@ public class InfixCalculator {
     }
     
     public static Queue<String> infixToPostfix(Queue<String> infix) {
-        Stack<String> operatorStack = new Stack<>();
-        Queue<String> postfixQueue = new Queue<>();
+        Stack<String> operatorStack = new Stack<>(); // stack to temporarily store the operators
+        Queue<String> postfixQueue = new Queue<>(); // queue to store the final postfix expression
 
         while (!infix.isEmpty()) {
 
             String token = infix.dequeue();
             // System.out.println(token + ":");
 
+            // if the given token is an operand, enqueue it
             if (numbers.matcher(token).matches()) {
                 postfixQueue.enqueue(token);
+
+            // if the given token is a '(', push it onto the stack
             } else if (token.indexOf("(") != -1) {
                 operatorStack.push(token);
+
+            // if the given token is a '(', pop and enqueue each operator on the stack until a '(' is found
             } else if (token.indexOf(")") != -1) {
 
                 boolean parenFound = false;
@@ -70,22 +83,32 @@ public class InfixCalculator {
                     }
                 }
 
+            // otherwise the token is assumed to be an operator
             } else {
                 
+                // if the stack is empty or there is a '(' on the top of the stack, push the operator on the stack
                 if (operatorStack.isEmpty() || (operatorStack.getHead().indexOf("(") != -1)) {
                     operatorStack.push(token);
+
                 } else {
                     int tokenPrecedence = findPredence(token);
                     int lastPrecedence = findPredence(operatorStack.getHead());
 
+                    // if the current operator has a higher precedence than the operator on the top of the stack
+                    // or the current operator has the same precedence as the operator on the top of the stack and the current operator is right associative
+                    // push the operator on the stack
                     if ((tokenPrecedence > lastPrecedence) || 
-                            ((tokenPrecedence == lastPrecedence) && isRightAssociative(operatorStack.getHead()))) {
+                            ((tokenPrecedence == lastPrecedence) && isRightAssociative(token))) {
                         operatorStack.push(token);
+
                     } else {
 
+                        // otherwise, keep popping and enqueueing every operator on the top of the stack as long as
+                        // the current operator has a lower precedence than the operator on the top of the stack
+                        // or the current operator has the same precedence as the operator on the top of the stack and the current operator is not right associative
                         while(!operatorStack.isEmpty() && 
                                 ((tokenPrecedence < lastPrecedence) || 
-                                    ((tokenPrecedence == lastPrecedence) && !isRightAssociative(operatorStack.getHead())))) {
+                                    ((tokenPrecedence == lastPrecedence) && !isRightAssociative(token)))) {
                             postfixQueue.enqueue(operatorStack.pop());
                             if (!operatorStack.isEmpty()) lastPrecedence = findPredence(operatorStack.getHead());
                         }
@@ -103,6 +126,7 @@ public class InfixCalculator {
             // System.out.println();
         }
 
+        // pop and enqueue the remaining operators on the stack
         while (!operatorStack.isEmpty()) {
             postfixQueue.enqueue(operatorStack.pop());
         }
@@ -113,7 +137,9 @@ public class InfixCalculator {
         return postfixQueue;
     }
 
+    // method to return the precedence of a given operator
     public static int findPredence(String token) {
+
         switch(token) {
             case "s":
             case "c":
@@ -144,9 +170,12 @@ public class InfixCalculator {
             default:
                 return 0;
         }
+
     }
 
+    // method to return whether a given operator is right associative
     public static boolean isRightAssociative(String token) {
+
         switch(token) {
             case "s":
             case "c":
@@ -157,23 +186,27 @@ public class InfixCalculator {
             default:
                 return false;
         }
+        
      }
 
     public static String postfixEval(Queue<String> postfix) {
-        Stack<String> evalStack = new Stack<>();
-        Pattern singleOperators = Pattern.compile("s|c|t|\\!");
+        Stack<String> evalStack = new Stack<>(); // stack used in evaluation of postfix expression
+        Pattern singleOperators = Pattern.compile("s|c|t|\\!"); // pattern used to check whether an operator operates on a single operand
 
         while (!postfix.isEmpty()) {
             String token = postfix.dequeue();
             // System.out.println(token + ": ");
         
+            // if the given token is an operand, push it on the stack
             if (numbers.matcher(token).matches()) {
                 evalStack.push(token.toString());
+
             } else {
 
                 double num2 = Double.parseDouble(evalStack.pop());
                 double newNum = 0.0;
                 
+                // if the given token is an operator that operates on a single operand, evaluate the next number in the stack with that operator
                 if (singleOperators.matcher(token).matches())  {
                 
                     switch(token) {
@@ -192,6 +225,8 @@ public class InfixCalculator {
                             break;
                     }
 
+                // otherwise it is assumed that the given token is an operator that operates on two operands
+                // so, pop another operand from the stack and evaluate both of them with the given operator
                 } else {
 
                     double num1 = Double.parseDouble(evalStack.pop());
@@ -238,7 +273,7 @@ public class InfixCalculator {
                     }
                 }
 
-                evalStack.push(String.valueOf(newNum));
+                evalStack.push(String.valueOf(newNum)); // push the newly evaluated number onto the stack
             }
 
             // System.out.print("Stack: ");
@@ -246,7 +281,7 @@ public class InfixCalculator {
             // System.out.println();
         }
 
-        String finalValue = String.format("%.2f", Double.parseDouble(evalStack.pop()));
+        String finalValue = String.format("%.2f", Double.parseDouble(evalStack.pop())); // formats the result to have two decimal places
         return finalValue;
     }
 
@@ -254,10 +289,12 @@ public class InfixCalculator {
         Scanner scan = new Scanner(new File(args[0]));
         FileWriter writer = new FileWriter(new File(args[1]));
 
+        // evaluates each line of an input file and writes the result to an output file
         while (scan.hasNextLine()) {
             writer.write(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))) + "\n");
             // System.out.println(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))));
         }
+
         writer.close();
         scan.close();
 

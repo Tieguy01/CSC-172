@@ -17,11 +17,9 @@ public class InfixCalculator {
 
         // go through each bit of the expression separated by spaces
         while (scan.hasNext()) {
-            // dividedExpression.viewQueue();
-            // System.out.println();
+
             String next = scan.next();
             Pattern operators = Pattern.compile("s|c|t|\\!|\\^|\\*|\\/|\\%|\\+|\\-|\\<|\\>|\\=|\\&|\\||\\(|\\)"); // pattern used to check whether a string is any of the operators 
-            //https://www.baeldung.com/java-check-string-number
             
             // if the given bit of the expression is a number or an oparator, enqueue it
             if (numbers.matcher(next).matches() || operators.matcher(next).matches()) {
@@ -35,7 +33,6 @@ public class InfixCalculator {
 
                 while (partScan.hasNext()) {
                     String nxt = partScan.next();
-                    // System.out.println(nxt);
 
                     // for each character of the bit, if it is a number or a character, enqueue it
                     if (numbers.matcher(nxt).matches() || operators.matcher(nxt).matches()) {
@@ -48,8 +45,6 @@ public class InfixCalculator {
         }
         scan.close();
 
-        // dividedExpression.viewQueue();
-        // System.out.println();
         return dividedExpression;
     }
     
@@ -60,7 +55,6 @@ public class InfixCalculator {
         while (!infix.isEmpty()) {
 
             String token = infix.dequeue();
-            // System.out.println(token + ":");
 
             // if the given token is an operand, enqueue it
             if (numbers.matcher(token).matches()) {
@@ -117,13 +111,6 @@ public class InfixCalculator {
                     }
                 }
             }
-
-            // System.out.print("Stack: ");
-            // operatorStack.viewStack();
-            // System.out.println();
-            // System.out.print("Queue: ");
-            // postfixQueue.viewQueue();
-            // System.out.println();
         }
 
         // pop and enqueue the remaining operators on the stack
@@ -131,9 +118,6 @@ public class InfixCalculator {
             postfixQueue.enqueue(operatorStack.pop());
         }
 
-        // System.out.print("Queue: ");
-        // postfixQueue.viewQueue();
-        // System.out.println();
         return postfixQueue;
     }
 
@@ -195,7 +179,6 @@ public class InfixCalculator {
 
         while (!postfix.isEmpty()) {
             String token = postfix.dequeue();
-            // System.out.println(token + ": ");
         
             // if the given token is an operand, push it on the stack
             if (numbers.matcher(token).matches()) {
@@ -276,9 +259,6 @@ public class InfixCalculator {
                 evalStack.push(String.valueOf(newNum)); // push the newly evaluated number onto the stack
             }
 
-            // System.out.print("Stack: ");
-            // evalStack.viewStack();
-            // System.out.println();
         }
 
         String finalValue = String.format("%.2f", Double.parseDouble(evalStack.pop())); // formats the result to have two decimal places
@@ -292,17 +272,9 @@ public class InfixCalculator {
         // evaluates each line of an input file and writes the result to an output file
         while (scan.hasNextLine()) {
             writer.write(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))) + "\n");
-            // System.out.println(postfixEval(infixToPostfix(stringConverter(scan.nextLine()))));
         }
 
         writer.close();
         scan.close();
-
-        // System.out.println(postfixEval(infixToPostfix("!((1<3)&(2>4)|1)")));
-        // System.out.println(postfixEval(infixToPostfix("2-1+1")));
-        // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 + 3 * 7)"))));
-        // System.out.println(postfixEval(infixToPostfix(stringConverter("(1 - 2) - ((((4 ^ 5) * 3) * 6) / (7 ^ (2 ^ 2)))"))));
-        // System.out.println(postfixEval(infixToPostfix(stringConverter("s(2 * 2) + c(8 / 2) + tan(2 + 2)"))));
-        // stringConverter("! * / + - < > = & | ( ) 1 1.1 0.1 11.1 11 -1 -10 -1.1 (-1)");
     }
 }

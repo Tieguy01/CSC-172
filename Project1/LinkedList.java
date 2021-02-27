@@ -40,6 +40,7 @@ public class LinkedList<T> {
         return obj;
     }
 
+    // used to return the data of the head of the list without removing the head from the list
     public T getHead() {
         return head.data;
     }

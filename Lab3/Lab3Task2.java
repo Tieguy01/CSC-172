@@ -7,15 +7,8 @@ import Lab3.Lab3Task1;
 
 public class Lab3Task2 {
 
-    /**
-     * @param dir
-     * 1: left
-     * 2: right
-     * 3: up
-     * 4: down
-     */
+    // returns a modified 2D array after producing a running sum from an array and a given direction
     public static int[][] runningSum2DArray(int[][] array, int dir) {
-        
         int[][] modArray = new int[array.length][array[0].length];
         for(int i = 0; i < array.length; i++) {
             for(int j = 0; j < array[i].length; j++) {
@@ -69,13 +62,8 @@ public class Lab3Task2 {
         }
     }
 
-    /**
-     * @param dir
-     * 1: left
-     * 2: right
-     * 3: up
-     * 4: down
-     */
+
+    // returns a modified 2D ArrayList after producing a running sum from an ArrayList and a given direction
     public static ArrayList<ArrayList<Integer>> running2DArrayList(ArrayList<ArrayList<Integer>> list, int dir) {
         ArrayList<ArrayList<Integer>> modList = new ArrayList<ArrayList<Integer>>();
         modList.add(new ArrayList<Integer>(Arrays.asList(0, 0, 0, 0)));

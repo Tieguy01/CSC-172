@@ -5,19 +5,21 @@ import java.util.Arrays;
 
 public class Lab3Task1 {
 
+    // prints a formatted 2D array
     public static void print2Darray(int[][] array) {
         for(int[] i : array) {
             for(int j : i) {
-                System.out.printf("%-13d", j);
+                System.out.printf("%-13d", j); // formated to give space between elements
             }
             System.out.println("\n");
         }
     }
 
+    // prints a formatted 2D ArrayList
     public static void print2DList(ArrayList<ArrayList<Integer>> list) {
         for(ArrayList<Integer> i : list) {
             for(Integer j : i) {
-                System.out.printf("%-13d", j); 
+                System.out.printf("%-13d", j); // formated to give space between elements
             }
             System.out.println("\n");
         }

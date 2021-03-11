@@ -18,7 +18,7 @@ public class DNAList {
     static Sequence[] sequences;
 
     public static void insert(int pos, String type, String sequence) {
-        LinkedList<IndexedChar> sequenceList = new LinkedList<>();
+        LinkedList<Character> sequenceList = new LinkedList<>();
         Type sequenceType;
 
         Pattern DNAchars = Pattern.compile("A|C|G|T");
@@ -28,7 +28,7 @@ public class DNAList {
             sequenceType = Type.DNA;
             for (int i = sequence.length() - 1; i >= 0; i--) {
                 if (DNAchars.matcher(Character.toString(sequence.charAt(i))).matches()) {
-                    sequenceList.addToHead(new IndexedChar(i, sequence.charAt(i)));
+                    sequenceList.addToHead(sequence.charAt(i));
                 } else {
                     System.out.println("Error occured while inserting");
                     return;
@@ -38,7 +38,7 @@ public class DNAList {
             sequenceType = Type.RNA;
             for (int i = sequence.length() - 1; i >= 0; i--) {
                 if (RNAchars.matcher(Character.toString(sequence.charAt(i))).matches()) {
-                    sequenceList.addToHead(new IndexedChar(i, sequence.charAt(i)));
+                    sequenceList.addToHead(sequence.charAt(i));
                 } else {
                     System.out.println("Error occured while inserting");
                     return;
@@ -89,18 +89,13 @@ public class DNAList {
         } else if (end > sequences[pos].getSequence().size()) {
             System.out.println("End index out of bounds");
         } else {
-            LinkedList<IndexedChar> clippedSequence = new LinkedList<>();
-            Node<IndexedChar> currentNode = sequences[pos].getSequence().getHead();
-            while(currentNode.data.getIndex() <= end) {
-                if (currentNode.data.getIndex() >= start) {
+            LinkedList<Character> clippedSequence = new LinkedList<>();
+            Node<Character> currentNode = sequences[pos].getSequence().getHead();
+            for (int i = 0; i <= end; i++) {
+                if (i >= start) {
                     clippedSequence.addToTail(currentNode.data);
                 }
-
-                if (currentNode.next != null) {
-                    currentNode = currentNode.next;
-                } else {
-                    break;
-                }
+                currentNode = currentNode.next;
             }
             sequences[pos].setSequence(clippedSequence);
         }
@@ -108,16 +103,11 @@ public class DNAList {
 
     public static void copy(int pos1, int pos2) {
         if (sequences[pos1] != null) {
-            LinkedList<IndexedChar> copiedSequence = new LinkedList<>();
-            Node<IndexedChar> currentNode = sequences[pos1].getSequence().getHead();
-            while(currentNode.data.getIndex() < sequences[pos1].getSequence().size()) {
+            LinkedList<Character> copiedSequence = new LinkedList<>();
+            Node<Character> currentNode = sequences[pos1].getSequence().getHead();
+            for (int i = 0; i < sequences[pos1].getSequence().size(); i++) {
                 copiedSequence.addToTail(currentNode.data);
-
-                if (currentNode.next != null) {
-                    currentNode = currentNode.next;
-                } else {
-                    break;
-                }
+                currentNode = currentNode.next;
             }
             sequences[pos2] = new Sequence(sequences[pos1].getType(), copiedSequence);
         } else {
@@ -131,30 +121,26 @@ public class DNAList {
         } else if (sequences[pos1].getType() == Type.RNA) {
             System.out.println("Cannot Transcribe RNA");
         } else {
-            LinkedList<IndexedChar> transcribedSequence = new LinkedList<>();
-            Node<IndexedChar> currentNode = sequences[pos1].getSequence().getHead();
-            while(currentNode.data.getIndex() < sequences[pos1].getSequence().size()) {
-                int index = sequences[pos1].getSequence().size() - currentNode.data.getIndex() - 1;
-                switch(currentNode.data.getCharacter()) {
+            LinkedList<Character> transcribedSequence = new LinkedList<>();
+            Node<Character> currentNode = sequences[pos1].getSequence().getHead();
+            for (int i = 0; i < sequences[pos1].getSequence().size(); i++) {
+                
+                switch(currentNode.data) {
                     case 'A':
-                        transcribedSequence.addToHead(new IndexedChar(index, 'U'));
+                        transcribedSequence.addToHead('U');
                         break;
                     case 'C':
-                        transcribedSequence.addToHead(new IndexedChar(index, 'G'));
+                        transcribedSequence.addToHead('G');
                         break;
                     case 'G':
-                        transcribedSequence.addToHead(new IndexedChar(index, 'C'));
+                        transcribedSequence.addToHead('C');
                         break;
                     case 'T':
-                        transcribedSequence.addToHead(new IndexedChar(index, 'A'));
+                        transcribedSequence.addToHead('A');
                         break;
                 }
 
-                if (currentNode.next != null) {
-                    currentNode = currentNode.next;
-                } else {
-                    break;
-                }
+                currentNode = currentNode.next;
             }
             sequences[pos1] = new Sequence(Type.RNA, transcribedSequence);
         }
@@ -162,6 +148,7 @@ public class DNAList {
 
 
     public static void main(String[] args) throws FileNotFoundException{
+        /*
         sequences = new Sequence[Integer.parseInt(args[0])];
         Scanner scan = new Scanner(new File(args[1]));
 
@@ -197,14 +184,15 @@ public class DNAList {
             command.close();
         }
         scan.close();
+        */
 
-        // sequences = new Sequence[20];
-        // insert(0, "DNA", "AATTCCGGAATTCCGG");
-        // // insert(1, "RNA", "UAGACAUGGAUU");
-        // print();
-        // // copy(0, 1);
-        // // clip(0, 2, 15);
-        // transcribe(0);
-        // print();
+        sequences = new Sequence[20];
+        insert(0, "DNA", "AATTCCGGAATTCCGG");
+        // insert(1, "RNA", "UAGACAUGGAUU");
+        print();
+        // copy(0, 1);
+        // clip(0, 2, 15);
+        transcribe(0);
+        print();
     }
 }

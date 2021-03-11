@@ -162,16 +162,49 @@ public class DNAList {
 
 
     public static void main(String[] args) throws FileNotFoundException{
-        // sequences = new Sequence[Integer.parseInt(args[0])];
-        // Scanner scan = new Scanner(new File(args[1]));
+        sequences = new Sequence[Integer.parseInt(args[0])];
+        Scanner scan = new Scanner(new File(args[1]));
 
-        sequences = new Sequence[20];
-        insert(0, "DNA", "AATTCCGGAATTCCGG");
-        // insert(1, "RNA", "UAGACAUGGAUU");
-        print();
-        // copy(0, 1);
-        // clip(0, 2, 15);
-        transcribe(0);
-        print();
+        while (scan.hasNextLine()) {
+            Scanner command = new Scanner(scan.nextLine());
+            String operation  = command.next();
+
+            switch(operation) {
+                case "insert":
+                    insert(command.nextInt(), command.next(), command.next());
+                    break;
+                case "remove":
+                    remove(command.nextInt());
+                    break;
+                case "print":
+                    if (command.hasNext()) {
+                        printPos(command.nextInt());
+                    } else {
+                        print();
+                    }
+                    break;
+                case "clip":
+                    clip(command.nextInt(), command.nextInt(), command.nextInt());
+                    break;
+                case "copy":
+                    copy(command.nextInt(), command.nextInt());
+                    break;
+                case "transcribe":
+                    transcribe(command.nextInt());
+                    break;
+            }
+
+            command.close();
+        }
+        scan.close();
+
+        // sequences = new Sequence[20];
+        // insert(0, "DNA", "AATTCCGGAATTCCGG");
+        // // insert(1, "RNA", "UAGACAUGGAUU");
+        // print();
+        // // copy(0, 1);
+        // // clip(0, 2, 15);
+        // transcribe(0);
+        // print();
     }
 }

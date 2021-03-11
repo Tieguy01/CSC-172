@@ -4,11 +4,6 @@ import java.util.NoSuchElementException;
 
 public class LinkedList<T> {
 
-    // private class Node {
-    //     T data;
-    //     Node next;
-    // }
-
     private Node<T> head, tail;
     private int n = 0;
 
@@ -48,7 +43,6 @@ public class LinkedList<T> {
         return obj;
     }
 
-    // used to return the data of the head of the list without removing the head from the list
     public Node<T> getHead() {
         return head;
     }

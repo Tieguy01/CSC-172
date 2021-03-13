@@ -56,7 +56,7 @@ public class DNAList {
         }
     }
 
-    // removes a sequence from the a given position in the array
+    // removes a sequence from a given position in the array
     public static void remove(int pos) {
         if (pos >= sequences.length) {
             System.out.println("Sequence index out of bounds");
@@ -91,7 +91,7 @@ public class DNAList {
         }
     }
 
-    // replaces a sequence with a clipped version of that sequence given a specified start and end of where to clip the sequence (including the start and end in the clipped sequence)
+    // replaces a sequence with a clipped version of that sequence given a specified start and end for where to clip the sequence (including the start and end in the clipped sequence)
     public static void clip(int pos, int start, int end) {
         if (pos >= sequences.length) {
             System.out.println("Sequence index out of bounds");

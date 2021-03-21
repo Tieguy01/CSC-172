@@ -29,10 +29,8 @@ import java.util.Calendar;
 /**
  * Questions for TAs
  * Quicksort StackOverflowError
- * files to turn in (just Sorting.java and pdf?)
  * Nearly sorted array
  * Bubble sort algorithm
- * Mergesort Poor performance
  * Chart format (log scale x-axis)
  */
 
@@ -53,22 +51,26 @@ public class Sorting {
      * @param args the command-line arguments
      */
     public static void main(String[] args) throws IOException{ 
-        In in = new In(args[0]);
-        
-		  // Storing file input in an array
+        In in = new In(args[0]);   
+
+		// Storing file input in an array
         int[] a = in.readAllInts();
-        
+		
+		// b contains sorted integers from a (You can use Java Arrays.sort() method)
         int[] b = new int[a.length];
         for (int i = 0; i < a.length; i++) {
           b[i] = a[i];
         }
         Arrays.sort(b);
 
+		// c contains all integers stored in reverse order 
         int[] c = new int[b.length];
         for (int i = 0; i < b.length; i++) {
           c[i] = b[b.length - i - 1];
         }
 
+		// d contains almost sorted array 
+        //(b copied to d, then (0.1 * d.length)  many swaps performed to acheive this.   
         int[] d = new int[b.length];
         for (int i = 0; i < b.length; i++) {
           d[i] = b[i];
@@ -76,11 +78,12 @@ public class Sorting {
         for (int i = 0; i < 0.1 * d.length; i++) {
         	exchange(d, i, d.length - i - 1);
 		}
-		
+
 
 		int algorithmSelected = Integer.parseInt(args[1]);
 		char arrayUsed = 'a';
 
+		// Perform sorting on a,b,c,d. Print runtime for each case along with timestamp and record those.
 		int[][] arrs = {a, b, c, d};
 		for (int i = 0; i < arrs.length; i ++) {
 			Stopwatch timer = new Stopwatch();
@@ -90,6 +93,7 @@ public class Sorting {
 			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
 			String netID = "eshahan";
 
+			// Write the resultant array to a file (Each time you run a program 4 output files should be generated. (one for each a,b,c, and d)
 			FileWriter writer = new FileWriter(new File(arrayUsed + ".txt"));
 			for (int n : arrs[i]) {
 				writer.write(n + "");
@@ -100,43 +104,17 @@ public class Sorting {
 			StdOut.printf("%s %s %8.1f   %s  %s  %s\n", algorithmUsed, arrayUsed, time, timeStamp, netID, args[0]);
 			arrayUsed++;
 		}
-
-        // TODO: Generate 3 other arrays, b, c, d where
-        // b contains sorted integers from a (You can use Java Arrays.sort() method)
-        // c contains all integers stored in reverse order 
-        // (you can have your own O(n) solution to get c from b
-        // d contains almost sorted array 
-        //(You can copy b to a and then perform (0.1 * d.length)  many swaps to acheive this.   
-
-        //TODO: 
-        // Read the second argument and based on input select the sorting algorithm
-        //  * 0 = Arrays.sort() (Java Default)
-        //  * 1 = Bubble Sort
-        //  * 2 = Selection Sort 
-        //  * 3 = Insertion Sort 
-        //  * 4 = Mergesort
-        //  * 5 = Quicksort
-        //  Perform sorting on a,b,c,d. Pring runtime for each case along with timestamp and record those. 
-        // For runtime and priting, you can use the same code from Lab 4 as follows:
-        
-         // TODO: For each array, a, b, c, d:  
-        // Stopwatch timer = new Stopwatch();
-        // TODO: Perform Sorting and store the result in an  array
-
-        // double time = timer.elapsedTimeMillis();
-        
-        // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-          //TODO: Replace with your own netid
-        // String netID = "eshahan";
-          //TODO: Replace with the algorithm used 
-        // String algorithmUsed = "insertion sort";
-          //TODO: Replace with the  array used 
-        // String arrayUsed = "a";
-        //   StdOut.printf("%s %s %8.1f   %s  %s  %s\n", algorithmUsed, arrayUsed, time, timeStamp, netID, args[0]);
-          // Write the resultant array to a file (Each time you run a program 4 output files should be generated. (one for each a,b,c, and d)
 	} 
 
 	static String algorithmUsed = "";
+ 
+	// Second argument and based on input sorting algorithm selected
+	//  * 0 = Arrays.sort() (Java Default)
+	//  * 1 = Bubble Sort
+	//  * 2 = Selection Sort 
+	//  * 3 = Insertion Sort 
+	//  * 4 = Mergesort
+	//  * 5 = Quicksort
 
 	public static void sort(int[] arr, int algorithm) {
 		switch(algorithm) {
@@ -210,9 +188,10 @@ public class Sorting {
 		}
 	}
 
+	static int[] aux;
+
 	public static void merge(int[] arr, int lo, int mid, int hi) {
-		int[] aux = new int[arr.length];
-		
+
 		int i = lo;
 		int j = mid + 1;
 		for (int k = lo; k <= hi; k++) {
@@ -232,6 +211,7 @@ public class Sorting {
 	}
 
 	public static void mergeSort(int[] arr) {
+		aux = new int[arr.length];
 		mergeSort(arr, 0, arr.length - 1);
 	}
 
@@ -244,21 +224,28 @@ public class Sorting {
 	}
 
 	public static int partition(int[] arr, int lo, int hi) {
-		int i = lo; 
-		int j = hi + 1;
-		int v = arr[lo];
-		while(true) {
-			while (arr[++i] < v) {
-				if (i == hi) break;
-			} 
-			while (v < arr[--j]) {
-				if (j == lo) break;
+		int mid = lo + (hi - lo) / 2;
+		int pivot = arr[mid];
+
+		boolean done = false;
+		while (!done) {
+			while (arr[lo] < pivot) {
+				lo++;
 			}
-			if (i >= j) break;
-			exchange(arr, i, j);
+
+			while (pivot < arr[hi]) {
+				hi--;
+			}
+
+			if (lo >= hi) {
+				done = true;
+			} else {
+				exchange(arr, lo, hi);
+				lo++;
+				hi--;
+			}
 		}
-		exchange(arr, lo, j);
-		return j;
+		return hi;
 	}
 
 	public static void quickSort(int[] arr) {
@@ -266,10 +253,11 @@ public class Sorting {
 	}
 
 	public static void quickSort(int[] arr, int lo, int hi) {
-		if (hi <= lo) return;
-		int j = partition(arr, lo, hi);
-		quickSort(arr, lo, j-1);
-		quickSort(arr, j+1, hi);
+		if (lo < hi) {
+			int j = partition(arr, lo, hi);
+			quickSort(arr, lo, j);
+			quickSort(arr, j+1, hi);
+		}
 	}
 } 
 

@@ -103,48 +103,67 @@ public class HuffmanSubmit implements Huffman {
 
 	private static final int R = 256;
 
-	public static void calcFrequencies(String inputFile, String freqFile) throws IOException{
+	public static void calcFrequencies(String inputFile, String freqFile) {
 		BinaryIn in = new BinaryIn(inputFile);
 		int[] freq = new int[R];
-		FileWriter freqWriter = new FileWriter(new File(freqFile));
-		
-		while (!in.isEmpty()) {
-			freq[in.readChar()]++;
-		}
-		for (int i = 0; i < freq.length; i++) { 
-			if (freq[i] > 0) {
-				String charByte = "";
-				for (int j = 0; j < 8; j++) {
-					charByte = ((((char)i) >> j) & 1) + charByte;
-				}
-				freqWriter.write(charByte + ":" + freq[i] + "\n");
+
+		try {
+			FileWriter freqWriter = new FileWriter(new File(freqFile));
+
+			while (!in.isEmpty()) {
+				freq[in.readChar()]++;
 			}
+			for (int i = 0; i < freq.length; i++) { 
+				if (freq[i] > 0) {
+					String charByte = "";
+					for (int j = 0; j < 8; j++) {
+						charByte = ((((char)i) >> j) & 1) + charByte;
+					}
+					freqWriter.write(charByte + ":" + freq[i] + "\n");
+				}
+			}
+			freqWriter.close();
+
+		} catch (IOException e) {
+			System.out.println(e);
 		}
-		freqWriter.close();
 	}
 
-	public static Node buildTrie(String freqFile) throws FileNotFoundException{
-		Scanner freqScan = new Scanner(new File(freqFile));
+	public static Node buildTrie(String freqFile) {
 		MinPQ<Node> pq = new MinPQ<>();
 
-		while (freqScan.hasNextLine()) {
-			String next = freqScan.nextLine();
-			char c = (char)Integer.parseInt(next.substring(0, 8), 2);
-			pq.insert(new Node(c, Integer.parseInt(next.substring(9)), null, null));
-		}
-		freqScan.close();
+		try{
+			Scanner freqScan = new Scanner(new File(freqFile));
+			
+			while (freqScan.hasNextLine()) {
+				String next = freqScan.nextLine();
+				char c = (char)Integer.parseInt(next.substring(0, 8), 2);
+				pq.insert(new Node(c, Integer.parseInt(next.substring(9)), null, null));
+			}
+			pq.insert(new Node('\u0000', 0, null, null));
+			freqScan.close();
 
-		while (pq.size() > 1) {
-			System.out.println("size: " + pq.size());
-			Node x = pq.delMin();
-			if (x.isLeaf()) System.out.println("x: " + x.ch);
-			else System.out.println("x: " + x.freq);
-			Node y = pq.delMin();
-			if (y.isLeaf()) System.out.println("y: " + y.ch);
-			else System.out.println("y: " + y.freq);
-			Node parent = new Node('\0', x.freq + y.freq, x, y);
-			pq.insert(parent);
+			while (pq.size() > 1) {
+				// System.out.println("size: " + pq.size());
+
+				Node x = pq.delMin();
+
+				// if (x.isLeaf()) System.out.println("x: " + x.ch);
+				// else System.out.println("x: " + x.freq);
+
+				Node y = pq.delMin();
+
+				// if (y.isLeaf()) System.out.println("y: " + y.ch);
+				// else System.out.println("y: " + y.freq);
+
+				Node parent = new Node('\0', x.freq + y.freq, x, y);
+				pq.insert(parent);
+			}
+			
+		} catch (FileNotFoundException e)  {
+			System.out.println(e);
 		}
+
 		return pq.delMin();
 	}
 
@@ -158,7 +177,7 @@ public class HuffmanSubmit implements Huffman {
 	public static void buildCode(String[] st, Node x, String s) {
 		if (x.isLeaf()) {
 			st[x.ch] = s;
-			System.out.println(x.ch + " " + s);
+			// System.out.println(x.ch + " " + s);
 			return;
 		}
 		buildCode(st, x.left, s + '0');
@@ -176,33 +195,70 @@ public class HuffmanSubmit implements Huffman {
 			String code = st[in.readChar()];
 			for (int j = 0; j < code.length(); j++) {
 				if (code.charAt(j) == '1') {
-					System.out.print(1);
+					// System.out.print(1);
 					out.write(true);
 				} else {
-					System.out.print(0);
+					// System.out.print(0);
 					out.write(false);
 				}
 			}
-			System.out.println();
+			// System.out.println();
 		}
+
+		String nullCode = st[0];
+		for (int i = 0; i < nullCode.length(); i++) {
+			if (nullCode.charAt(i) == '1') {
+				// System.out.print(1);
+				out.write(true);
+			} else {
+				// System.out.print(0);
+				out.write(false);
+			}
+		}
+		// System.out.println();
+
 		out.flush();
 	}
 
+	public static void expand(Node root, String inputFile, String outputFile) {
+		BinaryIn in  = new BinaryIn(inputFile);
+		BinaryOut out = new BinaryOut(outputFile);
+
+		while (!in.isEmpty()) {
+			
+			Node currNode = root;
+			while (!currNode.isLeaf()) {
+
+				if (in.readBoolean()) {
+					// System.out.println(1);
+					currNode = currNode.right;
+				} else {
+					// System.out.println(0);
+					currNode = currNode.left;
+				}
+			}
+			if (currNode.ch == '\u0000') break;
+			out.write(currNode.ch);
+		}
+		out.close();
+	}
+
 	public void encode(String inputFile, String outputFile, String freqFile) {
-		// calcFrequencies(inputFile, freqFile);
-		// Node root = buildTrie(freqFile);
-		// write(root, inputFile, outputFile);
+		calcFrequencies(inputFile, freqFile);
+		Node root = buildTrie(freqFile);
+		write(root, inputFile, outputFile);
 	}
 
 
 	public void decode(String inputFile, String outputFile, String freqFile){
-			// TODO: Your code here
+		Node root = buildTrie(freqFile);
+		expand(root, inputFile, outputFile);
 	}
 
    	public static void main(String[] args) throws IOException{
     	Huffman  huffman = new HuffmanSubmit();
-		huffman.encode("ur.jpg", "ur.enc", "freq.txt");
-		huffman.decode("ur.enc", "ur_dec.jpg", "freq.txt");
+		// huffman.encode("ur.jpg", "ur.enc", "freq.txt");
+		// huffman.decode("ur.enc", "ur_dec.txt", "freq.txt");
 		// After decoding, both ur.jpg and ur_dec.jpg should be the same. 
 		// On linux and mac, you can use `diff' command to check if they are the same.
 
@@ -219,10 +275,16 @@ public class HuffmanSubmit implements Huffman {
 		// testPQ.delMin();
 		// testPQ.printList();
 
-		calcFrequencies("in.txt", "freq.txt");
-		Node root = buildTrie("freq.txt");
-		printTrie(root);
-		System.out.println();
-		write(root, "in.txt", "out.txt");
+		// calcFrequencies("in.txt", "freq.txt");
+		// Node root = buildTrie("freq.txt");
+		// printTrie(root);
+		// System.out.println();
+		// write(root, "in.txt", "out.txt");
+
+		// huffman.encode("in.txt", "out.txt", "freq.txt");
+		// huffman.decode("out.txt", "in_dec.txt", "freq.txt");
+
+		// huffman.encode("alice30.txt", "alice30.enc", "freq.txt");
+		// huffman.decode("alice30.enc", "alice30_dec.txt", "freq.txt");
    	}
 }

@@ -13,67 +13,169 @@ public class HuffmanSubmit implements Huffman {
 
 		private class PQNode implements Comparable<PQNode>{
 			T data;
-			PQNode next;
+			PQNode parent;
+			PQNode left;
+			PQNode right;
+			String whichChild;
 
 			public int compareTo(PQNode that) {
 				return this.data.compareTo(that.data);
 			}
 		}
 
-		private PQNode head, tail;
+		private PQNode root;
 		private int n;
 
 		public int size() {
 			return n;
 		}
 
-		public void insert(T obj) {
-			PQNode newLink = new PQNode();
-			newLink.data = obj;
+		public void swim(PQNode n) {
+			while (n.parent != null && more(n.parent, n)) {
+				System.out.println(n.parent.data + " more than " + n.data);
+				if(root == n.parent)  root = n;
+				exchange(n.parent, n);
+			}
+		}
 
-			if (head == null) {
-				head = newLink;
-				tail = newLink;
-			} else if (newLink.compareTo(tail) > 0) {
-				tail.next = newLink;
-				tail = newLink;
-			} else if (newLink.compareTo(head) <= 0) {
-				newLink.next = head;
-				head = newLink;
-			} else {
-				PQNode front = head;
-				while (front != null) {
-					if (newLink.compareTo(front.next) <= 0) {
-						newLink.next = front.next;
-						front.next = newLink;
-						break;
+		public void sink(PQNode n) {
+			while ((n.left != null && more(n, n.left)) || (n.right != null && more(n, n.right))) {
+				System.out.println("n: " + n.data); 
+				if (n.left != null && n.right == null) {
+					exchange(n, n.left);
+				} else {
+					if (more(n.left, n.right)) {
+						System.out.println("n.right: " + n.right.data);
+						exchange(n, n.right);
 					} else {
-						front = front.next;
+						exchange(n, n.left);
 					}
+				} 
+			}
+		}
+
+		public PQNode findLastNode(PQNode root) {
+			System.out.println("root find: " + root.data);
+			if (root.left != null) {
+				if (root.right != null) {
+					if (root.left.right == null) return findLastNode(root.left);
+					else return findLastNode(root.right);
 				}
+				return root.left;
 			} 
-			n++;
+			return root;
+		}
+
+		public PQNode findEndNode(PQNode root) {
+			if (root.left != null) {
+				if (root.right != null) return findEndNode(root.right);
+				else return findEndNode(root.left);
+			}
+			return root;
+		}
+
+		public void insert(T obj) {
+			System.out.println("newNode: " + obj);
+			PQNode newNode = new PQNode();
+			newNode.data = obj;
+
+			if (root == null) {
+				root = newNode;
+			} else {
+				System.out.println("root: " + root.data);
+				PQNode lastNode = findLastNode(root);
+				System.out.println("lastNode: " + lastNode.data);
+				if (lastNode.whichChild == "left" && lastNode.parent.right == null) {
+					lastNode = lastNode.parent;
+					lastNode.right = newNode;
+					newNode.whichChild = "right";
+				} else {
+					lastNode.left = newNode;
+					newNode.whichChild = "left";
+				}
+				newNode.parent = lastNode;
+				if (root.left != null) System.out.println("root left: " + root.left.data);
+				if (root.right != null) System.out.println("root right: " + root.right.data);
+				swim(newNode);
+			}
 		}
 
 		public T delMin() {
-			if (head == null) throw new NoSuchElementException();
-			T obj = head.data;
-			head = head.next;
-			n--;
-			return obj;
+			if (root == null) throw new NoSuchElementException();
+			T min = root.data;
+			PQNode endNode = findEndNode(root);
+			System.out.println("endNode: " + endNode.data);
+			if (endNode.whichChild == "left") {
+				endNode.parent.left = null;
+			} else {
+				endNode.parent.right = null;
+			}
+			endNode.left = root.left;
+			endNode.right = root.right;
+			endNode.parent = null;
+			endNode.whichChild = null;
+			root = endNode;
+			sink(root);
+			return min;
+		}
+
+		public boolean more(PQNode n, PQNode m) {
+			System.out.println("parent: " + n.data);
+			System.out.println("more: " + n.compareTo(m));
+			return n.compareTo(m) > 0;
+		}
+
+		public void exchange(PQNode ogParent, PQNode ogChild) {
+			if (ogParent.whichChild == "left" ) {
+				ogParent.parent.left = ogChild;
+			} else if (ogParent.whichChild == "right") {
+				ogParent.parent.right = ogChild;
+			} else {
+				root = ogChild;
+			}
+			ogChild.parent = ogParent.parent;
+			PQNode leftTemp = ogChild.left;
+			PQNode rightTemp = ogChild.right;
+			String whichChildTemp = ogChild.whichChild;
+			ogChild.whichChild = ogParent.whichChild;
+			if (whichChildTemp == "left") {
+				ogChild.left = ogParent;
+				if (ogParent.right != null) ogParent.right.parent = ogChild;
+				ogChild.right = ogParent.right;
+			} else {
+				ogChild.right = ogParent;
+				if (ogParent.left != null) ogParent.left.parent = ogChild;
+				ogChild.left = ogParent.left;
+			}
+			ogParent.left = leftTemp;
+			if (ogParent.left != null) ogParent.left.parent = ogParent;
+			ogParent.right = rightTemp;
+			if (ogParent.right != null)ogParent.right.parent = ogParent;
+			ogParent.parent = ogChild;
+			ogParent.whichChild = whichChildTemp;
+
+			if (ogParent.parent != null)System.out.println("Parent parent: " + ogParent.parent.data);
+			if (ogParent.left != null) System.out.println("Parent left: " + ogParent.left.data);
+			if (ogParent.right != null) System.out.println("Parent right: " + ogParent.right.data);
+			System.out.println("parent whichChild: " + ogParent.whichChild);
+			if (ogChild.parent != null)System.out.println("child parent: " + ogChild.parent.data);
+			if (ogChild.left != null) System.out.println("child left: " + ogChild.left.data);
+			if (ogChild.right != null) System.out.println("child right: " + ogChild.right.data);
+			System.out.println("child whichChild: " + ogChild.whichChild);
 		}
 
 		public void printList() {
-			printList(head);
+			printList(root);
 			System.out.println();
 		}
 	
-		private void printList(PQNode front) {
-			if (front == null) {
+		private void printList(PQNode root) {
+			if (root == null) {
 				return;
 			} else {
-				System.out.print(front.data.toString() + " ");
-				printList(front.next);
+				System.out.print(root.data.toString() + " ");
+				printList(root.left);
+				printList(root.right);
 			}
 		}
 
@@ -177,7 +279,8 @@ public class HuffmanSubmit implements Huffman {
 	public static void buildCode(String[] st, Node x, String s) {
 		if (x.isLeaf()) {
 			st[x.ch] = s;
-			// System.out.println(x.ch + " " + s);
+			if (x.ch == '\u0000') System.out.println("null: " + s);
+			else System.out.println(x.ch + " " + s);
 			return;
 		}
 		buildCode(st, x.left, s + '0');
@@ -262,18 +365,25 @@ public class HuffmanSubmit implements Huffman {
 		// After decoding, both ur.jpg and ur_dec.jpg should be the same. 
 		// On linux and mac, you can use `diff' command to check if they are the same.
 
-		// MinPQ<Integer> testPQ = new MinPQ<>();
-		// testPQ.insert(2);
-		// testPQ.insert(8);
-		// testPQ.insert(1);
-		// testPQ.insert(7);
-		// testPQ.insert(3);
-		// testPQ.insert(6);
-		// testPQ.insert(4);
-		// testPQ.printList();
-		// testPQ.delMin();
-		// testPQ.delMin();
-		// testPQ.printList();
+		MinPQ<Integer> testPQ = new MinPQ<>();
+		testPQ.insert(2);
+		testPQ.printList();
+		testPQ.insert(8);
+		testPQ.printList();
+		testPQ.insert(1);
+		testPQ.printList();
+		testPQ.insert(7);
+		testPQ.printList();
+		testPQ.insert(3);
+		testPQ.printList();
+		testPQ.insert(6);
+		testPQ.printList();
+		testPQ.insert(4);
+		testPQ.printList();
+		testPQ.delMin();
+		testPQ.printList();
+		testPQ.delMin();
+		testPQ.printList();
 
 		// calcFrequencies("in.txt", "freq.txt");
 		// Node root = buildTrie("freq.txt");

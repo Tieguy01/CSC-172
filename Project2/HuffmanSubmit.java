@@ -512,10 +512,10 @@ public class HuffmanSubmit implements Huffman {
 		// System.out.println();
 		// write(root, "in.txt", "out.txt");
 
-		// huffman.encode("in.txt", "out.txt", "freq.txt");
-		// huffman.decode("out.txt", "in_dec.txt", "freq.txt");
+		huffman.encode("in.txt", "out.txt", "freq.txt");
+		huffman.decode("out.txt", "in_dec.txt", "freq.txt");
 
-		huffman.encode("alice30.txt", "alice30.enc", "freq.txt");
-		huffman.decode("alice30.enc", "alice30_dec.txt", "freq.txt");
+		// huffman.encode("alice30.txt", "alice30.enc", "freq.txt");
+		// huffman.decode("alice30.enc", "alice30_dec.txt", "freq.txt");
    	}
 }

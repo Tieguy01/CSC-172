@@ -7,8 +7,10 @@ import java.util.Scanner;
 
 public class Graph {
 
-    private Hashtable<Integer, String> adj;
+    // private Hashtable<Integer, String> adj;
     private Hashtable<String, Node> intersections;
+
+    private String head;
 
     private double minLat;
     private double minLong;
@@ -16,15 +18,17 @@ public class Graph {
     private double maxLong;
 
     public Graph(String mapFile) throws FileNotFoundException {
-        adj = new Hashtable<>();
+        // adj = new Hashtable<>();
         intersections = new Hashtable<>();
         Scanner scan = new Scanner(new File(mapFile));
 
-        int i = 0;
         minLat = Double.MAX_VALUE;
         minLong = Double.MAX_VALUE;
         maxLat = Double.MIN_VALUE;
         maxLong = Double.MIN_VALUE;
+
+        int i = 0;
+        boolean firstLine = true;
         while (scan.hasNextLine()) {
             String nextLine = scan.nextLine();
             Scanner lineScan = new Scanner(nextLine);
@@ -33,12 +37,18 @@ public class Graph {
 
             if (type.equals("i")) {
                 String intersectionID = lineScan.next();
-                intersections.put(intersectionID, new Node(intersectionID, i, Double.parseDouble(lineScan.next()), Double.parseDouble(lineScan.next())));
-                adj.put(i, intersectionID);
-                if (getNodeFromIndex(i).getLatitude() < minLat) minLat = getNodeFromIndex(i).getLatitude();
-                if (getNodeFromIndex(i).getLongitude() < minLong) minLong = getNodeFromIndex(i).getLongitude();
-                if (getNodeFromIndex(i).getLatitude() > maxLat) maxLat = getNodeFromIndex(i).getLatitude();
-                if (getNodeFromIndex(i).getLongitude() > maxLong) maxLong = getNodeFromIndex(i).getLongitude();
+                if (firstLine) {
+                    head = intersectionID;
+                    firstLine = false;
+                }
+                Double latitude = Double.parseDouble(lineScan.next());
+                Double longitude = Double.parseDouble(lineScan.next());
+                intersections.put(intersectionID, new Node(intersectionID, i, latitude, longitude));
+                // adj.put(i, intersectionID);
+                if (latitude < minLat) minLat = latitude;
+                if (longitude < minLong) minLong = longitude;
+                if (latitude > maxLat) maxLat = latitude;
+                if (longitude > maxLong) maxLong = longitude;
                 i++;
             }
 
@@ -60,24 +70,31 @@ public class Graph {
         return intersections.size();
     }
 
-    public Hashtable<Integer, String> getAdj() {
-        return adj;
-    }
+    // public Hashtable<Integer, String> getAdj() {
+    //     return adj;
+    // }
 
     public Hashtable<String, Node> getIntersections() {
         return intersections;
     }
 
-    public Iterable<Edge> getAdjRoads(int intersectionID) {
-        return getAdjRoads(adj.get(intersectionID));
-    }
+    // public Iterable<Edge> getAdjRoads(int intersectionID) {
+    //     return getAdjRoads(adj.get(intersectionID));
+    // }
 
     public Iterable<Edge> getAdjRoads(String intersectionID) {
         return intersections.get(intersectionID).getAdj();
     }
 
-    public Node getNodeFromIndex(int index) {
-        return intersections.get(adj.get(index));
+    // public Node getNodeFromIndex(int index) {
+    //     return intersections.get(adj.get(index));
+    // }
+
+    public void unmarkIntersections() {
+        for (String s : intersections.keySet()) {
+            intersections.get(s).marked = false;
+            intersections.get(s).unmarkEdges();
+        }
     }
 
     public void printGraph() {
@@ -95,6 +112,10 @@ public class Graph {
             Node intersection = intersections.get(s);
             System.out.println(s + " " + intersection.getIndex() + " " + intersection.getLatitude() + " " + intersection.getLongitude());
         }
+    }
+
+    public Node getHeadNode() {
+        return intersections.get(head);
     }
 
     public double getMinLat() {

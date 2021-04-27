@@ -7,6 +7,8 @@ public class Edge implements Comparable<Edge>{
     private final Node intersection2;
     private final Double weight;
 
+    boolean marked;
+
     public Edge (String id, Node int1ID, Node int2ID) {
         this.id = id;
         this.intersection1 = int1ID;
@@ -15,6 +17,8 @@ public class Edge implements Comparable<Edge>{
         weight = Math.sqrt(
             Math.pow(Math.abs(int1ID.getLatitude() - int2ID.getLatitude()), 2) +
             Math.pow(Math.abs(int1ID.getLongitude() - int2ID.getLongitude()), 2));
+
+        marked = false;
     }
 
     public String getId() {

@@ -10,6 +10,6 @@ public class Project3 {
         // map.printGraph();
         // map.printIntersections();
         GraphGraphics graphics = new GraphGraphics();
-        graphics.drawMap(map);
+        graphics.drawMap(map, args[0]);
     }
 }

@@ -8,18 +8,28 @@ public class Node {
     private final double longitude;
     Bag<Edge> adj;
 
+    boolean marked;
+
     public Node(String ID, int index, double latitude, double longitude) {
         this.ID = ID;
         this.index = index;
         // this.latitude = Math.abs(((1000000 * latitude) % 100000));
         // this.longitude = Math.abs(((1000000 * longitude) % 100000));
         this.latitude = latitude;
-        this.longitude = -longitude;
+        this.longitude = longitude;
         adj = new Bag<>();
+
+        marked = false;
     }
 
     public void addAdj(Edge edge) {
         adj.add(edge);
+    }
+
+    public void unmarkEdges() {
+        for (Edge e : adj) {
+            e.marked = false;
+        }
     }
 
     public String getID() {

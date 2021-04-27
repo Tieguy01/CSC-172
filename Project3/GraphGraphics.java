@@ -7,24 +7,19 @@ public class GraphGraphics {
 
     JFrame frame;
 
-    public GraphGraphics() {
+    public void initialize(String title) {
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        
         frame.setLayout(new BorderLayout());
-
         // frame.pack();
         frame.setSize(750, 750);
-
+        frame.setTitle(title);
         frame.setVisible(true);
     }
 
-    public void setTitle(String title) {
-        frame.setTitle(title);
-    }
-
-    public void drawMap(Graph map) {
+    public void drawMap(Graph map, String title) {
+        initialize(title);
         MapPanel mapPanel = new MapPanel(map);
         frame.add(mapPanel, BorderLayout.CENTER);
         // frame.pack();

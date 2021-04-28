@@ -9,7 +9,7 @@ public class Project3 {
         Graph map = new Graph(args[0]);
         // map.printGraph();
         // map.printIntersections();
-        GraphGraphics graphics = new GraphGraphics();
-        graphics.drawMap(map, args[0]);
+        GraphGraphics graphics = new GraphGraphics(map, args[0]);
+        graphics.drawMap();
     }
 }

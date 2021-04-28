@@ -17,17 +17,20 @@ public class Graph {
     private double maxLat;
     private double maxLong;
 
+    private int numEdges;
+
     public Graph(String mapFile) throws FileNotFoundException {
         // adj = new Hashtable<>();
         intersections = new Hashtable<>();
         Scanner scan = new Scanner(new File(mapFile));
 
-        minLat = Double.MAX_VALUE;
-        minLong = Double.MAX_VALUE;
-        maxLat = Double.MIN_VALUE;
-        maxLong = Double.MIN_VALUE;
+        minLat = Integer.MAX_VALUE;
+        minLong = Integer.MAX_VALUE;
+        maxLat = Integer.MIN_VALUE;
+        maxLong = Integer.MIN_VALUE;
 
         int i = 0;
+        int j = 0;
         boolean firstLine = true;
         while (scan.hasNextLine()) {
             String nextLine = scan.nextLine();
@@ -57,17 +60,27 @@ public class Graph {
                 String int1ID = lineScan.next();
                 String int2ID  = lineScan.next();
 
-                Edge newEdge = new Edge(rId, intersections.get(int1ID), intersections.get(int2ID));
+                Edge newEdge = new Edge(rId, j, intersections.get(int1ID), intersections.get(int2ID));
                 intersections.get(int1ID).addAdj(newEdge);
                 intersections.get(int2ID).addAdj(newEdge);
+                j++;
             }
             lineScan.close();
         }
+        numEdges = j;
+
+        System.out.println("minLat: " + minLat + "    maxLat: " + maxLat);
+        System.out.println("minLong: " + minLong + "    maxLong: " + maxLong);
+
         scan.close();
     }
 
     public int getNumIntersections() {
         return intersections.size();
+    }
+
+    public int getNumEdges() {
+        return numEdges;
     }
 
     // public Hashtable<Integer, String> getAdj() {
@@ -90,12 +103,12 @@ public class Graph {
     //     return intersections.get(adj.get(index));
     // }
 
-    public void unmarkIntersections() {
-        for (String s : intersections.keySet()) {
-            intersections.get(s).marked = false;
-            intersections.get(s).unmarkEdges();
-        }
-    }
+    // public void unmarkIntersections() {
+    //     for (String s : intersections.keySet()) {
+    //         intersections.get(s).marked = false;
+    //         intersections.get(s).unmarkEdges();
+    //     }
+    // }
 
     public void printGraph() {
         for (String s : intersections.keySet()) {

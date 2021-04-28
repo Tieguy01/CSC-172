@@ -8,7 +8,7 @@ public class Node {
     private final double longitude;
     Bag<Edge> adj;
 
-    boolean marked;
+    // boolean marked;
 
     public Node(String ID, int index, double latitude, double longitude) {
         this.ID = ID;
@@ -19,18 +19,18 @@ public class Node {
         this.longitude = longitude;
         adj = new Bag<>();
 
-        marked = false;
+        // marked = false;
     }
 
     public void addAdj(Edge edge) {
         adj.add(edge);
     }
 
-    public void unmarkEdges() {
-        for (Edge e : adj) {
-            e.marked = false;
-        }
-    }
+    // public void unmarkEdges() {
+    //     for (Edge e : adj) {
+    //         e.marked = false;
+    //     }
+    // }
 
     public String getID() {
         return ID;

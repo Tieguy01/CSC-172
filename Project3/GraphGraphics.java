@@ -6,23 +6,31 @@ import javax.swing.*;
 public class GraphGraphics {
 
     JFrame frame;
+    Graph map;
 
-    public void initialize(String title) {
+    public GraphGraphics(Graph map, String title) {
+        this.map = map;
+
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        frame.setLayout(new BorderLayout());
-        // frame.pack();
-        frame.setSize(750, 750);
+
+        BorderLayout layout = new BorderLayout();
+        frame.setLayout(layout);
+        frame.add(new JPanel(), BorderLayout.PAGE_START);
+        frame.add(new JPanel(), BorderLayout.PAGE_END);
+        frame.add(new JPanel(), BorderLayout.LINE_START);
+        frame.add(new JPanel(), BorderLayout.LINE_END);
+        
+        frame.setSize(710, 700);
         frame.setTitle(title);
+    }
+
+    public void drawMap() {
+        MapPanel mapPanel = new MapPanel(map);
+        frame.add(mapPanel, BorderLayout.CENTER);
+        System.out.println("Frame size: " + frame.getSize());
         frame.setVisible(true);
     }
 
-    public void drawMap(Graph map, String title) {
-        initialize(title);
-        MapPanel mapPanel = new MapPanel(map);
-        frame.add(mapPanel, BorderLayout.CENTER);
-        // frame.pack();
-        System.out.println("Frame size: " + frame.getSize());
-    }
 }

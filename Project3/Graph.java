@@ -69,8 +69,8 @@ public class Graph {
         }
         numEdges = j;
 
-        System.out.println("minLat: " + minLat + "    maxLat: " + maxLat);
-        System.out.println("minLong: " + minLong + "    maxLong: " + maxLong);
+        // System.out.println("minLat: " + minLat + "    maxLat: " + maxLat);
+        // System.out.println("minLong: " + minLong + "    maxLong: " + maxLong);
 
         scan.close();
     }

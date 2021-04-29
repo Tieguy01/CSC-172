@@ -52,4 +52,8 @@ public class Node {
         return adj;
     }
 
+    public String toString() {
+        return ID;
+    }
+
 }

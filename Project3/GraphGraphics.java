@@ -38,4 +38,10 @@ public class GraphGraphics {
         frame.setVisible(true);
     }
 
+    public void drawMST(Bag<Edge> mst) {
+        MapPanel mapPanel = new MapPanel(map, mst, true);
+        frame.add(mapPanel, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
+
 }

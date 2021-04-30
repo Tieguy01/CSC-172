@@ -60,7 +60,7 @@ public class ShortestPath {
             Node v = pq.delMin().getNode();
             known[v.getIndex()] = true;
             for (Edge e : v.getAdj()) {
-                Node w = e.getOtherInt(v);
+                Node w = e.getOtherIntersection(v);
                 if (!known[w.getIndex()]) {
                     double distanceToV = distanceNodes[v.getIndex()].distanceTo;
                     double distanceToW = distanceNodes[w.getIndex()].distanceTo;
@@ -89,15 +89,14 @@ public class ShortestPath {
     }
 
     public void printPath() {
-        System.out.print("Path: ");
-        
         Iterator<Node> it = path.iterator();
+        System.out.print("start: ");
         while (it.hasNext()) {
-            System.out.print(it.next().getID());
-            if (it.hasNext()) System.out.print(" -> ");
+            Node v = it.next();
+            if (!it.hasNext()) System.out.print("  end:  ");
+            else System.out.print("\t");
+            System.out.println(v.getID());
         }
-
-        System.out.println();
-        System.out.println("Distance: " + pathDistance);
+        System.out.println("Distance: " + String.format("%.3f", pathDistance) + " miles");
     }
 }

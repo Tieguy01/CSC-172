@@ -9,6 +9,7 @@ public class Graph {
 
     // private Hashtable<Integer, String> adj;
     private Hashtable<String, Node> intersections;
+    private Bag<Edge> roads;
 
     private String head;
 
@@ -17,11 +18,10 @@ public class Graph {
     private double maxLat;
     private double maxLong;
 
-    private int numEdges;
-
     public Graph(String mapFile) throws FileNotFoundException {
         // adj = new Hashtable<>();
         intersections = new Hashtable<>();
+        roads = new Bag<>();
         Scanner scan = new Scanner(new File(mapFile));
 
         minLat = Integer.MAX_VALUE;
@@ -61,13 +61,13 @@ public class Graph {
                 String int2ID  = lineScan.next();
 
                 Edge newEdge = new Edge(rId, j, intersections.get(int1ID), intersections.get(int2ID));
+                roads.add(newEdge);
                 intersections.get(int1ID).addAdj(newEdge);
                 intersections.get(int2ID).addAdj(newEdge);
                 j++;
             }
             lineScan.close();
         }
-        numEdges = j;
 
         // System.out.println("minLat: " + minLat + "    maxLat: " + maxLat);
         // System.out.println("minLong: " + minLong + "    maxLong: " + maxLong);
@@ -79,8 +79,8 @@ public class Graph {
         return intersections.size();
     }
 
-    public int getNumEdges() {
-        return numEdges;
+    public int getNumRoads() {
+        return roads.size();
     }
 
     // public Hashtable<Integer, String> getAdj() {
@@ -89,6 +89,10 @@ public class Graph {
 
     public Hashtable<String, Node> getIntersections() {
         return intersections;
+    }
+
+    public Bag<Edge> getRoads() {
+        return roads;
     }
 
     // public Iterable<Edge> getAdjRoads(int intersectionID) {
@@ -114,7 +118,7 @@ public class Graph {
         for (String s : intersections.keySet()) {
             System.out.print(s + ": ");
             for (Edge e : getAdjRoads(s)) {
-                System.out.print(e.getOtherInt(intersections.get(s)).getID() + " ");
+                System.out.print(e.getOtherIntersection(intersections.get(s)).getID() + " ");
             }
             System.out.println();
         }

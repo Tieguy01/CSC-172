@@ -1,5 +1,7 @@
 package Project3;
 
+import java.util.Iterator;
+
 public class ShortestPath {
 
     private class DistanceNode implements Comparable<DistanceNode> {
@@ -27,14 +29,14 @@ public class ShortestPath {
     private DistanceNode[] distanceNodes;
     private boolean[] known;
     private PriorityQueue<DistanceNode> pq;
-    private LinkedList<Node> path;
+    private Bag<Node> path;
     private double pathDistance;
 
     public ShortestPath(Graph map, String start, String target) {
         distanceNodes = new DistanceNode[map.getNumIntersections()];
         known = new boolean[map.getNumIntersections()];
         pq = new PriorityQueue<DistanceNode>(map.getNumIntersections());
-        path = new LinkedList<Node>();
+        path = new Bag<Node>();
 
         Node startIntersection = map.getIntersections().get(start);
         Node targetIntersection = map.getIntersections().get(target);
@@ -75,20 +77,26 @@ public class ShortestPath {
 
     private void createPath(Node v) {
         if (!(distanceNodes[v.getIndex()].predecessor == null)) {
-            path.addToHead(distanceNodes[v.getIndex()].getNode());
+            path.add(distanceNodes[v.getIndex()].getNode());
             createPath(distanceNodes[v.getIndex()].predecessor);
         } else {
-            path.addToHead(distanceNodes[v.getIndex()].getNode());
+            path.add(distanceNodes[v.getIndex()].getNode());
         }
     }
 
-    public LinkedList<Node> getPath() {
+    public Bag<Node> getPath() {
         return path;
     }
 
     public void printPath() {
         System.out.print("Path: ");
-        path.printList();
+        
+        Iterator<Node> it = path.iterator();
+        while (it.hasNext()) {
+            System.out.print(it.next().getID());
+            if (it.hasNext()) System.out.print(" -> ");
+        }
+
         System.out.println();
         System.out.println("Distance: " + pathDistance);
     }

@@ -9,9 +9,10 @@ public class Project3 {
         Graph map = new Graph(args[0]);
         // map.printGraph();
         // map.printIntersections();
-        // GraphGraphics graphics = new GraphGraphics(map, args[0]);
+        GraphGraphics graphics = new GraphGraphics(map, args[0]);
         // graphics.drawMap();
-        ShortestPath shortestPath = new ShortestPath(map, "HARKNESS", "SAGE");
+        ShortestPath shortestPath = new ShortestPath(map, "SPURRIER", "WILMOT");
         shortestPath.printPath();
+        graphics.drawPath(shortestPath.getPath());
     }
 }

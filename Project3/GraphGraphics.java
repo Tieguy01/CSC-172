@@ -23,13 +23,18 @@ public class GraphGraphics {
         frame.add(new JPanel(), BorderLayout.LINE_END);
         
         frame.setSize(710, 700);
-        frame.setTitle(title);
+        frame.setTitle(title.substring(0, title.length() - 4) + " map");
     }
 
     public void drawMap() {
         MapPanel mapPanel = new MapPanel(map);
         frame.add(mapPanel, BorderLayout.CENTER);
-        System.out.println("Frame size: " + frame.getSize());
+        frame.setVisible(true);
+    }
+
+    public void drawPath(Bag<Node> path) {
+        MapPanel mapPanel = new MapPanel(map, path);
+        frame.add(mapPanel, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 

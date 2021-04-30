@@ -2,6 +2,8 @@ package Project3;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.Iterator;
+
 import javax.swing.JPanel;
 
 public class MapPanel extends JPanel {
@@ -11,9 +13,16 @@ public class MapPanel extends JPanel {
     private Graph map;
     private boolean[] markedNodes;
     private boolean[] markedEdges;
+
+    private Bag<Node> path;
     
     public MapPanel(Graph map) {
         this.map = map;
+    }
+
+    public MapPanel(Graph map, Bag<Node> path) {
+        this.map = map;
+        this.path = path;
     }
 
     @Override
@@ -25,6 +34,8 @@ public class MapPanel extends JPanel {
         markedNodes = new boolean[map.getNumIntersections()];
         markedEdges = new boolean[map.getNumEdges()];
         depthFirstDraw(g2D, map.getHeadNode());
+
+        if (path != null) drawPath(g2D, path);
     }
 
     private void depthFirstDraw(Graphics2D g2D, Node v) {
@@ -51,7 +62,31 @@ public class MapPanel extends JPanel {
         }
     }
 
-    public Point.Double calcCoordinates(Node intersection) {
+    private void drawPath(Graphics2D g2D, Bag<Node> path) {
+        g2D.setColor(Color.RED);
+        g2D.setStroke(new BasicStroke(2));
+
+        Iterator<Node> it = path.iterator();
+        Node start = it.next();
+        drawPath(g2D, start, it);
+    }
+
+    private void drawPath(Graphics2D g2D, Node v, Iterator<Node> it) {
+        Point.Double nodePoint = calcCoordinates(v);
+        double x = nodePoint.getX();
+        double y = nodePoint.getY();
+
+        g2D.fill(new Ellipse2D.Double(x - 4, y - 4, 8, 8));
+
+        if (it.hasNext()) {
+            Node w = it.next();
+            Point.Double wPoint = calcCoordinates(w);
+            g2D.draw(new Line2D.Double(x, y, wPoint.getX(), wPoint.getY()));
+            drawPath(g2D, w, it);
+        }
+    }
+
+    private Point.Double calcCoordinates(Node intersection) {
         double mapWidth = map.getMaxlong() - map.getMinLong();
         double mapHeight = map.getMaxLat() - map.getMinLat();
         double frameWidth = getWidth();

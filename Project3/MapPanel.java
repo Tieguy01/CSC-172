@@ -70,6 +70,8 @@ public class MapPanel extends JPanel {
     // }
 
     private void depthFirstDraw(Graphics2D g2D) {
+        // g2D.setFont(g2D.getFont().deriveFont(g2D.getFont().getSize() * .85F));
+
         boolean[] markedNodes = new boolean[map.getNumIntersections()];
 
         for (Edge e : map.getRoads()) {
@@ -84,26 +86,31 @@ public class MapPanel extends JPanel {
             double wY = wPoint.getY();
 
             if (!markedNodes[v.getIndex()]) {
-                g2D.fill(new Ellipse2D.Double(vX - 2, vY - 2, 4, 4));
+                g2D.fill(new Ellipse2D.Double(vX - 1.5, vY - 1.5, 3, 3));
                 markedNodes[v.getIndex()] = true;
+                // g2D.drawString(v.getID(), (float) vX - 5, (float) vY - 3);
             }
 
             if (!markedNodes[w.getIndex()]) {
-                g2D.fill(new Ellipse2D.Double(wX - 2, wY - 2, 4, 4));
+                g2D.fill(new Ellipse2D.Double(wX - 1.5, wY - 1.5, 3, 3));
                 markedNodes[v.getIndex()] = true;
+                // g2D.drawString(v.getID(), (float) wX - 5, (float) wY - 5);
             }
 
             g2D.draw(new Line2D.Double(vX, vY, wX, wY));
+            // g2D.drawString(String.format("%.2f", e.getWeight()), (float) (Math.min(x, wX) + (Math.abs(x - wX) / 2)), (float) (Math.min(y, wY) + (Math.abs(y - wY) / 2)));
         }
     }
 
     private void drawPath(Graphics2D g2D, Bag<Node> path) {
-        g2D.setColor(Color.RED);
-        g2D.setStroke(new BasicStroke(2));
+        if (path != null) {
+            g2D.setColor(Color.RED);
+            g2D.setStroke(new BasicStroke(2));
 
-        Iterator<Node> it = path.iterator();
-        Node start = it.next();
-        drawPath(g2D, start, it);
+            Iterator<Node> it = path.iterator();
+            Node start = it.next();
+            drawPath(g2D, start, it);
+        }
     }
 
     private void drawPath(Graphics2D g2D, Node v, Iterator<Node> it) {

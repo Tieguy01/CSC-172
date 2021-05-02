@@ -83,9 +83,9 @@ public class Graph {
         return roads.size();
     }
 
-    // public Hashtable<Integer, String> getAdj() {
-    //     return adj;
-    // }
+    public Iterable<String> getKeys() {
+        return intersections.keySet();
+    }
 
     public Hashtable<String, Node> getIntersections() {
         return intersections;

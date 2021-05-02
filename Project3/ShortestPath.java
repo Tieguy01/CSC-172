@@ -41,18 +41,25 @@ public class ShortestPath {
         Node startIntersection = map.getIntersections().get(start);
         Node targetIntersection = map.getIntersections().get(target);
 
+        ConnectedComponents cc = new ConnectedComponents(map);
 
-        for (int i = 0; i < map.getNumIntersections(); i++) {
-            distanceNodes[i] = new DistanceNode();
-            distanceNodes[i].distanceTo = Double.POSITIVE_INFINITY;
+        if (cc.connected(startIntersection, targetIntersection)) {
+            for (int i = 0; i < map.getNumIntersections(); i++) {
+                distanceNodes[i] = new DistanceNode();
+                distanceNodes[i].distanceTo = Double.POSITIVE_INFINITY;
+            }
+            distanceNodes[startIntersection.getIndex()].distanceTo = 0.0;
+            distanceNodes[startIntersection.getIndex()].setNode(startIntersection);
+
+            pq.enqueue(distanceNodes[startIntersection.getIndex()]);
+            findShortestPath(targetIntersection);
+            createPath(targetIntersection);
+            pathDistance = distanceNodes[targetIntersection.getIndex()].distanceTo;
+        
+        } else {
+            path = null;
+            pathDistance = -1;
         }
-
-        distanceNodes[startIntersection.getIndex()].distanceTo = 0.0;
-        distanceNodes[startIntersection.getIndex()].setNode(startIntersection);
-        pq.enqueue(distanceNodes[startIntersection.getIndex()]);
-        findShortestPath(targetIntersection);
-        createPath(targetIntersection);
-        pathDistance = distanceNodes[targetIntersection.getIndex()].distanceTo;
     }
 
     private void findShortestPath(Node targetIntersection) {
@@ -95,14 +102,18 @@ public class ShortestPath {
     }
 
     public void printPath() {
-        Iterator<Node> it = path.iterator();
-        System.out.print("start: ");
-        while (it.hasNext()) {
-            Node v = it.next();
-            if (!it.hasNext()) System.out.print("  end:  ");
-            else System.out.print("\t");
-            System.out.println(v.getID());
+        if (path != null) {
+            Iterator<Node> it = path.iterator();
+            System.out.print("start: ");
+            while (it.hasNext()) {
+                Node v = it.next();
+                if (!it.hasNext()) System.out.print("  end:  ");
+                else System.out.print("\t");
+                System.out.println(v.getID());
+            }
+            System.out.println("Distance: " + String.format("%.3f", pathDistance) + " miles");
+        } else {
+            System.out.println("Intersections not connected");
         }
-        System.out.println("Distance: " + String.format("%.3f", pathDistance) + " miles");
     }
 }

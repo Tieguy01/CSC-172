@@ -75,6 +75,7 @@ public class MinimumSpanningTree {
                 mst.add(e);
             }
         }
+        // System.out.println(mst.size());
     }
 
     public Bag<Edge> getMST() {

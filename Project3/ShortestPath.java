@@ -57,7 +57,13 @@ public class ShortestPath {
 
     private void findShortestPath(Node targetIntersection) {
         while (!known[targetIntersection.getIndex()]) {
-            Node v = pq.delMin().getNode();
+            Node v = null;
+            if (!pq.isEmpty()) v = pq.delMin().getNode();
+            else {
+                System.out.println("target not found");
+                break;
+            }
+
             known[v.getIndex()] = true;
             for (Edge e : v.getAdj()) {
                 Node w = e.getOtherIntersection(v);

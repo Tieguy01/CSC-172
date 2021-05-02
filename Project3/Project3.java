@@ -30,7 +30,7 @@ public class Project3 {
                     break;
                 case "-meridianmap":
                     mst = new MinimumSpanningTree(map);
-                    mst.printMST();
+                    // mst.printMST();
                     displayMeridian = true;
                     break;
             }

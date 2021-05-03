@@ -1,6 +1,6 @@
 package Project3;
 
-// class used to assign identify connected compenents in a graph and the nodes contained within them
+// class used to identify connected compenents in a graph and the nodes contained within them
 public class ConnectedComponents {
 
     private boolean[] marked; // used to keep track of what nodes have been searched

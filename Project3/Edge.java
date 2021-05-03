@@ -1,5 +1,6 @@
 package Project3;
 
+// class representing an edge in a graph
 public class Edge implements Comparable<Edge>{
 
     // each edge has an ID, two vertices that it connects, and a weight that indicates its length in miles

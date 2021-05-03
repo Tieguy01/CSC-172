@@ -2,9 +2,8 @@ package Project3;
 
 import java.io.FileNotFoundException;
 
+// main class that runs code
 public class Project3 {
-
-
     public static void main(String[] args) throws FileNotFoundException {
         Graph map = new Graph(args[0]); // creates a graph from a given file name in the first argument
 

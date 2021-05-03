@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Hashtable;
 import java.util.Scanner;
 
+// class to create a store a graph from a given map file
 public class Graph {
 
     private Hashtable<String, Node> vertices; // stores vertices in the graph where the key in an intersection identifier and the value is an intersection node

@@ -1,5 +1,6 @@
 package Project3;
 
+// class representing a vertex in a graph
 public class Node {
 
     // each vertex node has its own ID, index, latitude and longitude coordinates, and a Bag containing the edges connected to it

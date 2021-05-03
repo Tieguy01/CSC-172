@@ -2,6 +2,7 @@ package Project3;
 
 import java.util.Iterator;
 
+// iterable bag class using linked nodes
 public class Bag<T> implements Iterable<T> {
 
     private class Node {

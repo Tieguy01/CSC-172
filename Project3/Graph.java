@@ -7,47 +7,45 @@ import java.util.Scanner;
 
 public class Graph {
 
-    // private Hashtable<Integer, String> adj;
-    private Hashtable<String, Node> intersections;
-    private Bag<Edge> roads;
+    private Hashtable<String, Node> vertices; // stores vertices in the graph where the key in an intersection identifier and the value is an intersection node
+    private Bag<Edge> edges; // stores the edges of the graph 
 
-    private String head;
-
+    // used tp keep track of the minimum and maximum coordinates for vertices in the graph
     private double minLat;
     private double minLong;
     private double maxLat;
     private double maxLong;
 
-    public Graph(String mapFile) throws FileNotFoundException {
-        // adj = new Hashtable<>();
-        intersections = new Hashtable<>();
-        roads = new Bag<>();
-        Scanner scan = new Scanner(new File(mapFile));
+    public Graph(String graphFile) throws FileNotFoundException {
+        vertices = new Hashtable<>();
+        edges = new Bag<>();
 
         minLat = Integer.MAX_VALUE;
         minLong = Integer.MAX_VALUE;
         maxLat = Integer.MIN_VALUE;
         maxLong = Integer.MIN_VALUE;
 
-        int i = 0;
-        int j = 0;
-        boolean firstLine = true;
+        Scanner scan = new Scanner(new File(graphFile)); // scanner to scan through an entire map file
+
+        int i = 0; // used to assign indices to the vertices
+
+        // while loop constructs a graph based on the data from a given map file
         while (scan.hasNextLine()) {
             String nextLine = scan.nextLine();
+
+            // scanner to scan through a single line on a map file delimited with tabs
             Scanner lineScan = new Scanner(nextLine);
             lineScan.useDelimiter("\t");
-            String type = lineScan.next();
 
+            String type = lineScan.next(); // stores whether a given line of a file includes data for a road or an intersection
+
+            // for every intersection listed in the file, a new vertex is created and added to the Hashtable and the min/max values are updated
             if (type.equals("i")) {
                 String intersectionID = lineScan.next();
-                if (firstLine) {
-                    head = intersectionID;
-                    firstLine = false;
-                }
                 Double latitude = Double.parseDouble(lineScan.next());
                 Double longitude = Double.parseDouble(lineScan.next());
-                intersections.put(intersectionID, new Node(intersectionID, i, latitude, longitude));
-                // adj.put(i, intersectionID);
+                vertices.put(intersectionID, new Node(intersectionID, i, latitude, longitude));
+
                 if (latitude < minLat) minLat = latitude;
                 if (longitude < minLong) minLong = longitude;
                 if (latitude > maxLat) maxLat = latitude;
@@ -55,99 +53,84 @@ public class Graph {
                 i++;
             }
 
+            // for every road listed in the file, a new edge is created, added to the Bag,
+            // and added to the adjecency lists of each vertex it connects
             if (type.equals("r")) {
-                String rId = lineScan.next();
-                String int1ID = lineScan.next();
-                String int2ID  = lineScan.next();
+                String roadID = lineScan.next();
+                String intersection1ID = lineScan.next();
+                String intersection2ID  = lineScan.next();
 
-                Edge newEdge = new Edge(rId, j, intersections.get(int1ID), intersections.get(int2ID));
-                roads.add(newEdge);
-                intersections.get(int1ID).addAdj(newEdge);
-                intersections.get(int2ID).addAdj(newEdge);
-                j++;
+                Edge newEdge = new Edge(roadID, vertices.get(intersection1ID), vertices.get(intersection2ID));
+                edges.add(newEdge);
+                vertices.get(intersection1ID).addAdj(newEdge);
+                vertices.get(intersection2ID).addAdj(newEdge);
             }
             lineScan.close();
         }
 
+        // used for debugging
         // System.out.println("minLat: " + minLat + "    maxLat: " + maxLat);
         // System.out.println("minLong: " + minLong + "    maxLong: " + maxLong);
 
         scan.close();
     }
 
-    public int getNumIntersections() {
-        return intersections.size();
+    // returns the number of vertices
+    public int getNumVertices() {
+        return vertices.size();
     }
 
-    public int getNumRoads() {
-        return roads.size();
+    // returns the number of edges
+    public int getNumEdges() {
+        return edges.size();
     }
 
+    // returns a set of the keys for the vertices in order to be able to iterate throught the Hashtable
     public Iterable<String> getKeys() {
-        return intersections.keySet();
+        return vertices.keySet();
     }
 
-    public Hashtable<String, Node> getIntersections() {
-        return intersections;
+    // returns the Hashtable storing the vertices
+    public Hashtable<String, Node> getVertices() {
+        return vertices;
     }
 
-    public Bag<Edge> getRoads() {
-        return roads;
+    // returns the Bag containing the edges
+    public Bag<Edge> getEdges() {
+        return edges;
     }
 
-    // public Iterable<Edge> getAdjRoads(int intersectionID) {
-    //     return getAdjRoads(adj.get(intersectionID));
-    // }
 
-    public Iterable<Edge> getAdjRoads(String intersectionID) {
-        return intersections.get(intersectionID).getAdj();
+    // methods to return the min/max vertex coordinates
+    public double getMinLat() {
+        return minLat;
+    }
+    public double getMinLong() {
+        return minLong;
+    }
+    public double getMaxLat() {
+        return maxLat;
+    }
+    public double getMaxlong() {
+        return maxLong;
     }
 
-    // public Node getNodeFromIndex(int index) {
-    //     return intersections.get(adj.get(index));
-    // }
-
-    // public void unmarkIntersections() {
-    //     for (String s : intersections.keySet()) {
-    //         intersections.get(s).marked = false;
-    //         intersections.get(s).unmarkEdges();
-    //     }
-    // }
-
+    // prints an adjencency list of the vertices, used for debugging
     public void printGraph() {
-        for (String s : intersections.keySet()) {
+        for (String s : vertices.keySet()) {
             System.out.print(s + ": ");
-            for (Edge e : getAdjRoads(s)) {
-                System.out.print(e.getOtherIntersection(intersections.get(s)).getID() + " ");
+            for (Edge e : vertices.get(s).getAdj()) {
+                System.out.print(e.getOther(vertices.get(s)).getID() + " ");
             }
             System.out.println();
         }
     }
 
+    // prints all the data for each vertex in a graph, used for debugging
     public void printIntersections() {
-        for (String s : intersections.keySet()) {
-            Node intersection = intersections.get(s);
-            System.out.println(s + " " + intersection.getIndex() + " " + intersection.getLatitude() + " " + intersection.getLongitude());
+        for (String s : vertices.keySet()) {
+            Node v = vertices.get(s);
+            System.out.println(s + " " + v.getIndex() + " " + v.getLatitude() + " " + v.getLongitude());
         }
-    }
-
-    public Node getHeadNode() {
-        return intersections.get(head);
-    }
-
-    public double getMinLat() {
-        return minLat;
-    }
-
-    public double getMinLong() {
-        return minLong;
-    }
-
-    public double getMaxLat() {
-        return maxLat;
-    }
-
-    public double getMaxlong() {
-        return maxLong;
     }
 }

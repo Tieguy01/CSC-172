@@ -2,6 +2,7 @@ package Project3;
 
 public class Node {
 
+    // each vertex node has its own ID, index, latitude and longitude coordinates, and a Bag containing the edges connected to it
     private final String ID;
     private final int index;
     private final double latitude;
@@ -11,13 +12,12 @@ public class Node {
     public Node(String ID, int index, double latitude, double longitude) {
         this.ID = ID;
         this.index = index;
-        // this.latitude = Math.abs(((1000000 * latitude) % 100000));
-        // this.longitude = Math.abs(((1000000 * longitude) % 100000));
         this.latitude = latitude;
         this.longitude = longitude;
         adj = new Bag<>();
     }
 
+    // adds an edge to the node's Bag of adjecent edges
     public void addAdj(Edge edge) {
         adj.add(edge);
     }
@@ -40,10 +40,6 @@ public class Node {
 
     public Bag<Edge> getAdj() {
         return adj;
-    }
-
-    public String toString() {
-        return ID;
     }
 
 }

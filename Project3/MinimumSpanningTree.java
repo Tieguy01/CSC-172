@@ -1,58 +1,67 @@
 package Project3;
 
+// class used to construct a minimum spanning tree for a given graph, implements Kruskal's MST algorithm
 public class MinimumSpanningTree {
+ 
+    // class used to store sets of connected vertices
+    private class VertexSet {
 
-    private class SetNode {
+        VertexSet set; // used to store what set a certain vertex is in
+        private Bag<Node> nodes; // Bag containing all the vertices in the set
+        int length; // length of the set
 
-        SetNode set;
-        private Bag<Node> nodes;
-        int length;
-
-        public SetNode() {
+        public VertexSet() {
             nodes = new Bag<>();
-            length = 1;
+            length = 0;
         }
 
+        // adds a vertex node to the set
         public void addNode(Node n) {
             nodes.add(n);
             length++;
         }
     }
 
-    private PriorityQueue<Edge> edgePQ;
-    private SetNode[] vertexSet;
-    private Bag<Edge> mst;
+    private PriorityQueue<Edge> edgePQ; // priority queue of all the edges in a graph sorted based on their weights
+    private VertexSet[] vertexSets; // array of sets for every vertex in a graph
+    private Bag<Edge> mst; // bag of edges used to store all the edges in the final mst
 
     public MinimumSpanningTree(Graph map) {
-        edgePQ = new PriorityQueue<Edge>(map.getNumRoads());
-        vertexSet = new SetNode[map.getNumIntersections()];
+        edgePQ = new PriorityQueue<Edge>(map.getNumEdges());
+        vertexSets = new VertexSet[map.getNumVertices()];
         mst = new Bag<>();
 
-        for (Edge e : map.getRoads()) {
+        // puts every edge in the graph into the priority queue
+        for (Edge e : map.getEdges()) {
             edgePQ.enqueue(e);
         }
 
-        for (int i = 0; i < map.getNumIntersections(); i++) {
-            vertexSet[i] = new SetNode();
-            vertexSet[i].set = vertexSet[i];
+        // creates a new set of vertices for every vertex in the graph, assigns its set to itself, and adds its correspondig vertex to its set
+        for (String s : map.getKeys()) {
+            Node v = map.getVertices().get(s);
+            vertexSets[v.getIndex()] = new VertexSet();
+            vertexSets[v.getIndex()].set = vertexSets[v.getIndex()];
+            vertexSets[v.getIndex()].addNode(v);
         }
 
-        int vertexSetLength = 1;
+        int vertexSetLength = 1; // used to keep track of the number of vertices in the largest set of vertices
 
-        while (!edgePQ.isEmpty() && vertexSetLength < map.getNumIntersections()) {
-            Edge e = edgePQ.delMin();
-            Node v = e.getEitherIntersection();
-            Node w = e.getOtherIntersection(v);
+        // loops until there are no edges left in the priority queue or the number of vertices in the largest set of vertices is >= the number of vertices in the graph
+        while (!edgePQ.isEmpty() && vertexSetLength < map.getNumVertices()) {
+            Edge e = edgePQ.delMin(); // gets the edge with the minimum weight from the priority queue
 
-            SetNode vSet = vertexSet[v.getIndex()].set;
-            SetNode wSet = vertexSet[w.getIndex()].set;
+            // nodes for both the vertices the edge connects
+            Node v = e.getEither();
+            Node w = e.getOther(v);
 
-            if (vSet.nodes.size() == 0) vSet.addNode(v);
-            if (wSet.nodes.size() == 0) wSet.addNode(w);
+            // sets containing each of the vertices the edge connects
+            VertexSet vSet = vertexSets[v.getIndex()].set;
+            VertexSet wSet = vertexSets[w.getIndex()].set;
 
+            // if the two vertices are not in the same set
             if (!vSet.equals(wSet)) {
-                SetNode parentSet;
-                SetNode lesserSet;
+                VertexSet parentSet;
+                VertexSet lesserSet;
 
                 if (vSet.length > wSet.length) {
                     parentSet = vSet;
@@ -62,30 +71,32 @@ public class MinimumSpanningTree {
                     lesserSet = vSet;
                 }
 
+                // every vertex in the smaller set is added to the larger set
                 for (Node n : lesserSet.set.nodes) {
-                    // System.out.println("n: " + n.getID());
-                    vertexSet[n.getIndex()].set = parentSet;
+                    vertexSets[n.getIndex()].set = parentSet;
                     parentSet.addNode(n);
                 }
-                lesserSet = null;
+                lesserSet = null; // smaller set set to null
 
-                vertexSetLength = parentSet.length;
-                // System.out.println("parentSet: " + vertexSetLength);
+                // if the length of the larger set is larger than the largest set length, then the largest set length is set to the length of the larger set
+                if (parentSet.length > vertexSetLength) vertexSetLength = parentSet.length;
 
+                // the edge is added to the mst
                 mst.add(e);
             }
         }
-        // System.out.println(mst.size());
     }
 
+    // returns the Bag of edges representing the minimum spanning tree
     public Bag<Edge> getMST() {
         return mst;
     }
 
+    // prints all the edges in the mst
     public void printMST() {
         System.out.println("Minimum Weight Spanning Tree: ");
         for (Edge e : mst) {
-            System.out.println("\t\t\t     " + e.getId());
+            System.out.println("\t\t\t     " + e.getID());
         }
     }
 }

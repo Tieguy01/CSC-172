@@ -12,6 +12,7 @@ public class Bag<T> implements Iterable<T> {
     private Node head;
     private int n;
 
+    // adds an element to the Bag
     public void add(T obj) {
         Node newNode = new Node();
         newNode.data = obj;
@@ -20,15 +21,18 @@ public class Bag<T> implements Iterable<T> {
         n++;
     }
 
+    // returns the current number of elements in the Bag
     public int size() {
         return n;
     }
 
+    // returns an iterator for the Bag
     public Iterator<T> iterator() {
-         return new ListIterator();
+         return new BagIterator();
     }
 
-    public class ListIterator implements Iterator<T> {
+    // iterator to iterate through the elements in the Bag
+    public class BagIterator implements Iterator<T> {
         private Node currNode = head;
 
         public boolean hasNext() {

@@ -10,6 +10,8 @@ public class MapPanel extends JPanel {
 
     private static final long serialVersionUID = 0;
 
+    private Graphics2D g2D;
+
     private Graph map;
     private Bag<Node> path;
     private Bag<Edge> mst;
@@ -31,13 +33,13 @@ public class MapPanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2D = (Graphics2D) g;
+        g2D = (Graphics2D) g;
         g2D.setColor(Color.BLACK);
 
-        depthFirstDraw(g2D);
+        depthFirstDraw();
 
-        if (path != null) drawPath(g2D, path);
-        if (mst != null) drawMST(g2D, mst);
+        if (path != null) drawPath(path);
+        if (mst != null) drawMST(mst);
     }
 
     // private void depthFirstDraw(Graphics2D g2D, Node v) {
@@ -69,7 +71,7 @@ public class MapPanel extends JPanel {
     //     // g2D.drawString(v.getID(), (float) x - 5, (float) y - 5);
     // }
 
-    private void depthFirstDraw(Graphics2D g2D) {
+    private void depthFirstDraw() {
         // g2D.setFont(g2D.getFont().deriveFont(g2D.getFont().getSize() * .85F));
 
         boolean[] markedNodes = new boolean[map.getNumIntersections()];
@@ -102,34 +104,39 @@ public class MapPanel extends JPanel {
         }
     }
 
-    private void drawPath(Graphics2D g2D, Bag<Node> path) {
+    private void drawPath(Bag<Node> path) {
         if (path != null) {
             g2D.setColor(Color.RED);
             g2D.setStroke(new BasicStroke(2));
 
             Iterator<Node> it = path.iterator();
-            Node start = it.next();
-            drawPath(g2D, start, it);
+
+            Node v = it.next();
+
+            while (true) {
+                Point.Double vPoint = calcCoordinates(v);
+                double vX = vPoint.getX();
+                double vY = vPoint.getY();
+
+                g2D.fill(new Ellipse2D.Double(vX - 2.5, vY - 2.5, 5, 5));
+
+                if (it.hasNext()) {
+                    Node w = it.next();
+                    Point.Double wPoint = calcCoordinates(w);
+                    double wX = wPoint.getX();
+                    double wY = wPoint.getY();
+
+                    g2D.draw(new Line2D.Double(vX, vY, wX, wY));
+                    v = w;
+
+                } else {
+                    break;
+                }
+            }
         }
     }
 
-    private void drawPath(Graphics2D g2D, Node v, Iterator<Node> it) {
-        Point.Double nodePoint = calcCoordinates(v);
-        double x = nodePoint.getX();
-        double y = nodePoint.getY();
-
-        g2D.fill(new Ellipse2D.Double(x - 4, y - 4, 8, 8));
-
-        if (it.hasNext()) {
-            Node w = it.next();
-            Point.Double wPoint = calcCoordinates(w);
-            g2D.draw(new Line2D.Double(x, y, wPoint.getX(), wPoint.getY()));
-            drawPath(g2D, w, it);
-        }
-    }
-
-
-    private void drawMST(Graphics2D g2D, Bag<Edge> mst) {
+    private void drawMST(Bag<Edge> mst) {
         g2D.setColor(Color.MAGENTA);
         g2D.setStroke(new BasicStroke(2));
 
@@ -147,12 +154,12 @@ public class MapPanel extends JPanel {
             double wY = wPoint.getY();
 
             if (!markedNodes[v.getIndex()]) {
-                g2D.fill(new Ellipse2D.Double(vX - 4, vY - 4, 8, 8));
+                g2D.fill(new Ellipse2D.Double(vX - 2.5, vY - 2.5, 5, 5));
                 markedNodes[v.getIndex()] = true;
             }
 
             if (!markedNodes[w.getIndex()]) {
-                g2D.fill(new Ellipse2D.Double(wX - 4, wY - 4, 8, 8));
+                g2D.fill(new Ellipse2D.Double(wX - 2.5, wY - 2.5, 5, 5));
                 markedNodes[v.getIndex()] = true;
             }
 

@@ -6,29 +6,40 @@ public class ConnectedComponents {
     private int[] components;
     private int numComponents;
 
+    private Queue<Node> queue;
+
     public ConnectedComponents(Graph map) {
         marked = new boolean[map.getNumIntersections()];
         components = new int[map.getNumIntersections()];
 
+        queue = new Queue<Node>();
+
         for (String s : map.getKeys()) {
             Node v = map.getIntersections().get(s);
             if (!marked[v.getIndex()]) {
-                depthFirstSearch(v);
+                breadthFirstSearch(v);
                 numComponents++;
             }
         }
     }
 
-    private void depthFirstSearch(Node v) {
+    private void breadthFirstSearch(Node v) {
         marked[v.getIndex()] = true;
         components[v.getIndex()] = numComponents;
-        for (Edge e : v.getAdj()) {
-            v = e.getOtherIntersection(v);
-            if (!marked[v.getIndex()]) {
-                // System.out.println(w.getID());
-                depthFirstSearch(v);
+        queue.enqueue(v);
+
+        while (!queue.isEmpty()) {
+            Node n = queue.dequeue();
+            for (Edge e : n.getAdj()) {
+                Node w = e.getOtherIntersection(n);
+                if (!marked[w.getIndex()]) {
+                    marked[w.getIndex()] = true;
+                    components[w.getIndex()] = numComponents;
+                    queue.enqueue(w);
+                }
             }
         }
+        
     }
 
     public boolean connected(Node v, Node w) {

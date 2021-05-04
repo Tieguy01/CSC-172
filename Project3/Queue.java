@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 import java.util.NoSuchElementException;

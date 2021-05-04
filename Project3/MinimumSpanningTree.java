@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 // class used to construct a minimum spanning tree for a given graph, implements Kruskal's MST algorithm

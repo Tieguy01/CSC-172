@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 // class representing a vertex in a graph

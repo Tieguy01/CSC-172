@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 import java.io.File;
@@ -100,7 +104,6 @@ public class Graph {
     public Bag<Edge> getEdges() {
         return edges;
     }
-
 
     // methods to return the min/max vertex coordinates
     public double getMinLat() {

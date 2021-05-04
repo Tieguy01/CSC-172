@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 // class representing an edge in a graph

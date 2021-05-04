@@ -1,3 +1,7 @@
+/**
+ * @author Ethan Shahan
+ */
+
 package Project3;
 
 // class used to identify connected compenents in a graph and the nodes contained within them
